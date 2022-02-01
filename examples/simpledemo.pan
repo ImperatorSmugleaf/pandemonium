@@ -4,8 +4,7 @@ proc main (string[] args) {
     if(args.length != 2) {
         skrrt("This program requires two numbers as input.");       $ Print something to the console and abort immediately
     }
-    num bSquared;
-    num cSquared;                                                   $ Variables can be declared before use
+    num bSquared, cSquared;                                         $ Variables can be declared before use, and in parallel
     set aSquared: num = square(num(args[0]));                       $ Constant variables are bound with "set", and can be declared in the same line. Also, type casting!
     set bSquared = () num {num(args[1]) * num(args[1])};            $ We've got lambdas!
     now cSquared = aSquared + bSquared;                             $ Mutable variables are bound with "now"
