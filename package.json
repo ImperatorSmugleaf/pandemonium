@@ -1,0 +1,23 @@
+{
+  "name": "pandemonium",
+  "version": "1.0.0",
+  "description": "This is a compiler for the language Pandemonium, created by Kieran Ahn!",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ImperatorSmugleaf/pandemonium.git"
+  },
+  "author": "Kieran Ahn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ImperatorSmugleaf/pandemonium/issues"
+  },
+  "homepage": "https://github.com/ImperatorSmugleaf/pandemonium#readme"
+}
