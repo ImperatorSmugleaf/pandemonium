@@ -17,7 +17,7 @@ num square(num toSquare) {                                          $ Functions 
     yeet toSquare^2;                                                $ Using "yeet" as the "return" equivalent is just really funny to me
 }
 
-proc printHypoteneuse(num aSquared, num bSquared, num cSquared) {   $ Protocols do not return values
+proc printHypoteneuse(num aSquared, num bSquared, num cSquared) {   $ Processes do not return values
     num c = sqrt(cSquared);
     string mathSummary = `\(aSquared) + \(bSquared) = \(cSquared)   $ String interpolation!
     Therefore, the length of the hypoteneuse is \(c).`              $ And multiline strings!
