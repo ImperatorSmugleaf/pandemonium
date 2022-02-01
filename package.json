@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "This is a compiler for the language Pandemonium, created by Kieran Ahn!",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "example": "examples",
     "test": "test"
