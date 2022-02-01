@@ -15,7 +15,7 @@
     "url": "git+https://github.com/ImperatorSmugleaf/pandemonium.git"
   },
   "author": "Kieran Ahn",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ImperatorSmugleaf/pandemonium/issues"
   },
