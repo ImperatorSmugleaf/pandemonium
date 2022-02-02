@@ -16,7 +16,7 @@ num square(num toSquare) {                                          $ Functions 
 }
 
 proc printHypoteneuse(num aSquared, num bSquared, num cSquared) {   $ Procedures do not return values
-    num c = sqrt(cSquared);
+    num c = cSquared^(1/2);
     string mathSummary = `#{aSquared} + #{bSquared} = #{cSquared}   $ String interpolation!
     Therefore, the length of the hypoteneuse is #{c}.`;             $ And multiline strings!
     
