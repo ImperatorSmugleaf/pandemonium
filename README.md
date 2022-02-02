@@ -62,6 +62,8 @@ TODO: Add associativity
 |   or     | logical or |
 |   ++     | Unary increment |
 |   --     | Unary decrement |
+|   +=     | Addition assignment |
+|   -=     | Subtraction assignment |
 
 # Keywords
 | Keyword | Meaning |
