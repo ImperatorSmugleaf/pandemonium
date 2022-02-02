@@ -159,7 +159,8 @@ struct Square {
 # Strings
 Pandemonium has numerous quality of life features for string usage.
 ```
-set theFirstSentence: string = "According to all known laws of aviation, there is no way a bee should be able to fly.";
+set theFirstSentence: string = `According to all known laws of aviation,        $ Multiline strings begin with backticks
+                                there is no way a bee should be able to fly.`;
 print("bee" in theFirstSentence);                           $ true
 set theFirstWord: string = theFirstSentence[0:8];           $ string slicing through subscripting is inclusive on both ends
 set theFirstLetter: string = theFirstWord[0];               $ string indexing through subscripting as well
