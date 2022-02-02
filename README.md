@@ -4,7 +4,7 @@
 By: Kieran Ahn
 
 # Introduction
-Pandemonium is a language designed to be safe, readable, and enjoyable. It is a collection of featuers from JavaScript, Swift, Python, and even one or two of its own. Another possible name was Stirfry, but Pandemonium is a cooler sounding name. It seeks to eliminate the one-billion dollar mistake and hold the programmer to a higher standard of correctness through rigid and rigorous typing. 
+Pandemonium is a language designed to be safe, readable, and enjoyable. It is a collection of featuers from JavaScript, Swift, Python, Javam and even one or two of its own. Another possible name was Stirfry, but Pandemonium is a cooler sounding name. It seeks to eliminate the one-billion dollar mistake and hold the programmer to a higher standard of correctness through rigid and rigorous typing. 
 
 # Features
 - Strong, static typing
