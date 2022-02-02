@@ -19,7 +19,7 @@ proc main {
             print("I'm keeping this one...");
             oneThroughSeven.preadd(lastValue);
         }
-        if(oneThroughSeven C< favoriteNumbers) {                    $ Proper subset operator, only functional on arrays.
+        if(oneThroughSeven C< favoriteNumbers) {                    $ Proper subset operator, only functional on lists.
             nope;                                                   $ "Break" statement equivalent
         }
     }
