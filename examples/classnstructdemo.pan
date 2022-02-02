@@ -32,7 +32,7 @@ struct Dog {
     now tailWagging: bool = false;
     
     public:
-    init(string name, string color) {                    
+    proc init(string name, string color) {                    
         now this.name: string = name;
         set this.color: string = color;
     }
@@ -48,7 +48,7 @@ class Cat {
     now isSleeping: bool = true;
     
     public:
-    init(string name, string color) {
+    proc init(string name, string color) {
         now this.name: string = name;
         set this.color: string = color;
     }
