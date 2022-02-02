@@ -66,16 +66,18 @@ TODO: Add associativity
 |   -=     | Subtraction assignment |
 
 # Keywords
-| Keyword | Meaning |
-| ------- | ------- |
-|   now   | Declare mutable variable |
-|   set   | Declare read-only variable |
-|   if    | Begin if statement |
-|   else  | Introduce else or else if statement |
-|   while | Begin while loop |
-|   for   | Begin for loop |
-|   yeet  | Return equivalent |
-|   nope  | Breaks out of loop |
+|  Keyword  | Meaning |
+| --------- | ------- |
+|   now     | Declare mutable variable |
+|   set     | Declare read-only variable |
+|   if      | Begin if statement |
+|   else    | Introduce else or else if statement |
+|   while   | Begin while loop |
+|   for     | Begin for loop |
+|   yeet    | Return equivalent |
+|   nope    | Breaks out of loop |
+|   public  | Sections off visible attributes |
+|   private | Sections off non-visible attributes |
 
 # Functions and Procedures
 Functions are blocks of code which always return a value. Procedures are blocks of code which do not return a value. Thus, by differentiating the two, we eliminate the existence of a runtime null.
