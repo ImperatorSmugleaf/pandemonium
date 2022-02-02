@@ -89,11 +89,12 @@ proc sayHello() {
 Lambda expressions are functions, as they must always return a value. Since they can only be used in expressions, their function signatures do not need to be declared explicitly, since they are implied to match that of the variables to which they are being bound.
 ```
 now x: num = 0;
-now xSquared: num = () -> {x ^ 2};    $ Variables bound to lambda expressions containing variables must always be mutable, since they may change over time.
+now xSquared: num = () -> {x ^ 2};    
+$ Variables bound to lambda expressions containing variables must always be mutable, since they may change over time.
 ```
 
 # Control Flow
-Control flow in pandemonium is similar to other languages, with no real suprises.
+Control flow in pandemonium is similar to other languages, with no real surprises.
 ```
 set dogsAreGood: bool = true;
 now isRaining: bool = false;
