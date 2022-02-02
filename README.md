@@ -172,12 +172,17 @@ print("I got #{sleepHours} hours of sleep last night.");    $ Easy, swiftlike st
 # Lists
 Lists have a few built-in attributes and methods to make working with them simple and intuitive. Lists can be mutable or read-only, depending on how they are declared. 
 ```
-now myNumbers: num[] = [];              $ Empty lists can be initialized
-myNumbers.add(1);                       $ [1]
-myNumbers.preadd(0);                    $ [0, 1]
-myNumbers.insertAt(1, 0.5);             $ [0, 0.5, 1]
-print(myNumbers[2]);                    $ 1
-myNumbers.clear()                       $ []
+now myNumbers: num[] = [];                    $ Empty lists can be initialized
+myNumbers.add(1);                             $ [1]
+myNumbers.preadd(0);                          $ [0, 1]
+myNumbers.insertAt(1, 0.5);                   $ [0, 0.5, 1]
+
+now oneToThree: num[] = [<-myNumbers, 2, 3]   $ [0, 0.5, 1, 2, 3]
+oneToThree.removeAt(1)                        $ [0, 1, 2, 3]
+
+print(myNumbers.pop());                       $ 1
+myNumbers.clear()                             $ []
+
 
 set theRealTreasure: string[] = ["The", "friends", "we", "made", "along", "the", "way"];
 theRealTreasure.clear()                 $ Error: cannot modify an immutable list.
