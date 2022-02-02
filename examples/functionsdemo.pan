@@ -16,8 +16,10 @@ struct Circle {
 }
 
 bool isPalindrome(string word) {                                $ Recursion!
-    if(string[0] == string[string.symbolcount - 1]) {
-        yeet isPalindrome(string[1:string.symbolcount - 1]);    $ Substrings are easily acquired through subscripting syntax
+    if(word.length < 2) {
+        yeet true;
+    } else if(word[0] == word[word.symbolcount - 1]) {
+        yeet isPalindrome(word[1:word.symbolcount - 1]);    $ Substrings are easily acquired through subscripting syntax
     } else {
         yeet false;
     }
