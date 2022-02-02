@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "assert/strict";
 
 describe("Basic arithmetic", () => {
     it("One plus one should equal 2.", () => {
