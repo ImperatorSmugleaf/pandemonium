@@ -111,7 +111,7 @@ if(dogsAreGood and isRaining) {
   print("If doggos aren't good, the world isn't real.");
 }
 
-set oneThroughFive: num[] = [1, 2, 3, 4, 5]
+set oneThroughFive: num[] = [1, 2, 3, 4, 5];
 for(x in oneThroughFive) {
   print(x);
 }
