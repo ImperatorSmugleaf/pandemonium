@@ -182,13 +182,13 @@ myNumbers.add(1);                             $ [1]
 myNumbers.preadd(0);                          $ [0, 1]
 myNumbers.insertAt(1, 0.5);                   $ [0, 0.5, 1]
 
-now oneToThree: num[] = [<-myNumbers, 2, 3]   $ [0, 0.5, 1, 2, 3]
-oneToThree.removeAt(1)                        $ [0, 1, 2, 3]
+now oneToThree: num[] = [<-myNumbers, 2, 3];  $ [0, 0.5, 1, 2, 3]
+oneToThree.removeAt(1);                       $ [0, 1, 2, 3]
 
 print(myNumbers.pop());                       $ 1
-myNumbers.clear()                             $ []
+myNumbers.clear();                            $ []
 
 
 set theRealTreasure: string[] = ["The", "friends", "we", "made", "along", "the", "way"];
-theRealTreasure.clear()                 $ Error: cannot modify an immutable list.
+theRealTreasure.clear();                $ Error: cannot modify an immutable list.
 ```
