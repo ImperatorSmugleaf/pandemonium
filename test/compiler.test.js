@@ -1,7 +1,26 @@
-import assert from "assert/strict";
+/**
+ * Tests for the Pandemonium compiler, base
+ * taken with permission form Dr. Toal's notes.
+ */
 
-describe("Basic arithmetic", () => {
-    it("One plus one should equal 2.", () => {
-        assert.equal(1 + 1, 2);
+import assert from "assert/strict";
+import util from "util";
+import compile from "../src/compiler.js";
+
+const sampleProgram = `print("Hello, world!");`;
+
+describe("The compiler", () => {
+    it("throws when the output type is unknown", (done) => {
+        assert.throws(() => compile("print(0);", "blah"), /Unknown output type/);
+        done();
+    });
+    it("accepts the ast option", (done) => {
+        const compiled = compile(sampleProgram, "ast");
+        assert(util.format(compiled).startsWith("   1 | Program"));
+        done();
+    });
+    it("throws if given an unimplemented option other than ast", (done) => {
+        assert.throws(() => compile(sampleProgram, "js"));
+        done();
     });
 });

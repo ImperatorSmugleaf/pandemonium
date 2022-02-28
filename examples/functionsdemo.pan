@@ -1,6 +1,6 @@
 $ Examples of what you can do with functions in pandemonium
 
-proc main(string[] args) {
+proc main([string] args) {
     set roundBoi: Circle = Circle(5);
     print(roundBoi.area);
     print(isPalindrome("recursion"));

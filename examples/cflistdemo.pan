@@ -1,12 +1,12 @@
 $ The basics of control flow and list manipulation!
 
-proc main {
-    set favoriteNumbers: num[] = [3, 4, 5, 7];
+proc main([string] args) {
+    set favoriteNumbers: [num] = [3, 4, 5, 7];
     for (number in favoriteNumbers) {
         print("#{number} is a great number!");
     }
     
-    now oneThroughSeven: num[] = [1, 2, <-favoriteNumbers];         $ [1, 2, 3, 4, 5, 7]
+    now oneThroughSeven: [num] = [1, 2, <-favoriteNumbers];         $ [1, 2, 3, 4, 5, 7]
     oneThroughSeven.insertAt(5, 6);                                 $ [1, 2, 3, 4, 5, 6, 7]
     
     for(i: num = 0; i < 7; i++) {

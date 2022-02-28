@@ -1,6 +1,6 @@
 $ A brief introduction to basic pandemonium features, demonstrated through the pythagorean theorem!
 
-proc main (string[] args) {
+proc main ([string] args) {
     if(args.length != 2) {
         skrrt("This program requires two numbers as input.");       $ Print something to the console and abort immediately
     }

@@ -1,0 +1,93 @@
+Pandemonium { 
+    Program     = Statement+
+    Block       = "{" Statement+ "}"
+    Statement   = Declaration                         
+                | nope ";"                                      -- nope
+                | yeet Exp ";"                                  -- yeet
+                | print "(" Args ")" ";"                        -- print
+                | while "(" Exp ")" Block                       -- while
+                | ProcCall                                  
+                | Assignment ";"                                -- assignment
+    Type        = numType | bool | stringType                   
+                | "[" Type "]"                                  -- list
+    Variable    = Variable "[" Exp "]"                          -- subscript
+                //TODO: Fix this ambiguity
+                | Variable "." Exp                         -- memberaccess
+                | id
+    Declaration = Vardec | Funcdec
+    Vardec      = now id ":" Type "=" Exp ";"                   -- mutable
+                | set id ":" Type "=" Exp ";"	                -- immutable
+    Funcdec     = Type id "(" Params ")" Block                  -- function
+                | proc id "(" Params ")" Block                  -- procedure
+    Assignment  = Increment                                     
+                | Variable "=" Exp                              -- base
+                | Variable "+=" Exp                             -- add
+                | Variable "-=" Exp                             -- sub
+    Increment   = ("++" | "--" ) Variable                       -- prefix
+                | Variable ("++" | "--")                        -- postfix
+
+
+    Exp         = Exp "||" Exp2                                 -- binary
+                | Exp2
+    Exp2        = Exp2 "&&" Exp3                                -- binary
+                | Exp3
+    Exp3        = Exp4 ("=="|"!=") Exp4                         -- binary
+                | Exp4
+    Exp4        = Exp5 ("<="|"<"|"C<"|"C="|in|">="|">") Exp5    -- binary
+                | Exp5
+    Exp5        = Exp5 ("+" | "-") Exp6                         -- binary
+                | Exp6
+    Exp6        = Exp6 ("*"|"/"|"%") Exp7                       -- binary
+                | Exp7
+    Exp7        = Exp8 ("^") Exp7                               -- binary
+                | Exp8
+    Exp8        = ("++" | "--" | "!" | "-") Exp9                -- unary
+                | Exp9
+    Exp9        = Exp10 ("++" | "--")                           -- unary
+                | Exp10
+    Exp10       = num
+                | true
+                | false
+                | FuncCall
+                | Variable
+                | id
+                | str
+                | "[" Args "]"                                  -- list
+                | "(" Exp ")"                                   -- grouping
+    
+    FuncCall    = id "(" Args ")"
+    ProcCall    = id "(" Args ")" ";"
+    
+    Params      = ListOf<Param, ",">
+    Args        = ListOf<Exp, ",">
+    Param       = Type id
+
+    idchar      = "_" | alnum
+    now         = "now" ~idchar
+    set         = "set" ~idchar
+    true        = "true" ~idchar
+    false       = "false" ~idchar
+    numType     = "num" ~idchar
+    bool        = "bool" ~idchar
+    stringType  = "string" ~idchar
+    proc        = "proc" ~idchar
+    for         = "for" ~idchar
+    while       = "while" ~idchar
+    if          = "if" ~idchar
+    elif        = "elif" ~idchar
+    else        = "else" ~idchar
+    yeet        = "yeet" ~idchar
+    nope        = "nope" ~idchar
+    print       = "print" ~idchar
+    in          = "in" ~idchar
+    str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter              -- oneline
+                | multiLineDelimiter (~multiLineDelimiter any)* multiLineDelimiter  -- multiline
+    character   = ~"\"" ~"\n" any
+    multiLineDelimiter = "`"
+    strDelimiter = "\""
+    id          = ~keyword letter idchar*
+    keyword     = now | set | numType | bool | stringType | if | else
+                | for | while | yeet | nope | in
+    num         = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+    space       += "$" (~"\n" any)* ("\n" | end)                -- comment
+}
