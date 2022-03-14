@@ -22,7 +22,7 @@ Pandemonium is a language designed to be safe, readable, and enjoyable. It is a 
 - string -> string
 - boolean -> bool
 - number -> num
-- list -> (some type)[]
+- list -> [(some type)]
 
 # Variable Declaration
 Variables can either be read-only or mutable, and variables cannot be declared without a binding. Variable naming convention is upperCamelCase. Variable names can only contain an an alphanumeric symbol or an underscore.
@@ -111,7 +111,7 @@ if(dogsAreGood and isRaining) {
   print("If doggos aren't good, the world isn't real.");
 }
 
-set oneThroughFive: num[] = [1, 2, 3, 4, 5];
+set oneThroughFive: [num] = [1, 2, 3, 4, 5];
 for(x in oneThroughFive) {
   print(x);
 }
@@ -152,7 +152,7 @@ struct Square {
   set this.sideLength: num = sideLength;
   }
   
-  set this.area: num = this.sideLength^2;
+  set this.area: num = this.sideLength^2 * 3.14;
   
   proc speak() {
     print("I'm a square!");
@@ -163,8 +163,8 @@ struct Square {
 # Strings
 Pandemonium has numerous quality of life features for string usage.
 ```
-set theFirstSentence: string = `According to all known laws of aviation,        $ Multiline strings begin with backticks
-                                there is no way a bee should be able to fly.`;
+set theFirstSentence: string = `According to all known laws of aviation,        
+                                there is no way a bee should be able to fly.`;  $ Multiline strings begin with backticks
 print("bee" in theFirstSentence);                           $ true
 set theFirstWord: string = theFirstSentence[0:8];           $ string slicing through subscripting is inclusive on both ends
 set theFirstLetter: string = theFirstWord[0];               $ string indexing through subscripting as well
@@ -177,12 +177,12 @@ print("I got #{sleepHours} hours of sleep last night.");    $ Easy, swiftlike st
 # Lists
 Lists have a few built-in attributes and methods to make working with them simple and intuitive. Lists can be mutable or read-only, depending on how they are declared. 
 ```
-now myNumbers: num[] = [];                    $ Empty lists can be initialized
+now myNumbers: [num] = [];                    $ Empty lists can be initialized
 myNumbers.add(1);                             $ [1]
 myNumbers.preadd(0);                          $ [0, 1]
 myNumbers.insertAt(1, 0.5);                   $ [0, 0.5, 1]
 
-now oneToThree: num[] = [<-myNumbers, 2, 3];  $ [0, 0.5, 1, 2, 3]
+now oneToThree: [num] = [<-myNumbers, 2, 3];  $ [0, 0.5, 1, 2, 3]
 oneToThree.removeAt(1);                       $ [0, 1, 2, 3]
 
 print(myNumbers.pop());                       $ 1
