@@ -7,12 +7,12 @@ Pandemonium {
                 | print "(" Args ")" ";"                        -- print
                 | while "(" Exp ")" Block                       -- while
                 | ProcCall                                  
+                | ForLoop
                 | Assignment ";"                                -- assignment
     Type        = numType | bool | stringType                   
                 | "[" Type "]"                                  -- list
     Variable    = Variable "[" Exp "]"                          -- subscript
-                //TODO: Fix this ambiguity
-                | Variable "." Exp                         -- memberaccess
+                | Variable "." Exp                              -- memberaccess
                 | id
     Declaration = Vardec | Funcdec
     Vardec      = now id ":" Type "=" Exp ";"                   -- mutable
@@ -25,6 +25,8 @@ Pandemonium {
                 | Variable "-=" Exp                             -- sub
     Increment   = ("++" | "--" ) Variable                       -- prefix
                 | Variable ("++" | "--")                        -- postfix
+    ForLoop     = for "(" Vardec id in Variable ")" Block       -- elementwise
+                | for "(" Vardec Exp ";" Exp ")" Block          -- incremental
 
 
     Exp         = Exp "||" Exp2                                 -- binary
@@ -33,11 +35,11 @@ Pandemonium {
                 | Exp3
     Exp3        = Exp4 ("=="|"!=") Exp4                         -- binary
                 | Exp4
-    Exp4        = Exp5 ("<="|"<"|"C<"|"C="|in|">="|">") Exp5    -- binary
+    Exp4        = Exp5 ("<="|"<"|"C<"|"C="|in|is|">="|">") Exp5 -- binary
                 | Exp5
     Exp5        = Exp5 ("+" | "-") Exp6                         -- binary
                 | Exp6
-    Exp6        = Exp6 ("*"|"/"|"%") Exp7                       -- binary
+    Exp6        = Exp6 ("*"|"//"|"/"|"%") Exp7                  -- binary
                 | Exp7
     Exp7        = Exp8 ("^") Exp7                               -- binary
                 | Exp8
@@ -80,6 +82,7 @@ Pandemonium {
     nope        = "nope" ~idchar
     print       = "print" ~idchar
     in          = "in" ~idchar
+    is          = "is" ~idchar
     str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter              -- oneline
                 | multiLineDelimiter (~multiLineDelimiter any)* multiLineDelimiter  -- multiline
     character   = ~"\"" ~"\n" any

@@ -39,11 +39,11 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Vardec_mutable(_now, id, _intro, type, _eq, expression, _semicolon) {
-        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast());
+        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), false);
     },
 
     Vardec_immutable(_set, id, _intro, type, _eq, expression, _semicolon) {
-        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast());
+        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), true);
     },
 
     Funcdec_function(type, id, _open, params, _close, block) {
@@ -89,6 +89,14 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     Variable_memberaccess(variable, _dot, property) {
         return new core.MemberAccess(variable.ast(), property.ast());
+    },
+
+    ForLoop_elementwise(_for, _open, declaration, elementId, _in, collection, _close, body) {
+        return new core.ElementwiseForStatement(declaration.ast(), elementId.ast(), collection.ast(), body.ast());
+    },
+
+    ForLoop_incremental(_for, _open, declaration, test, _semi, increment, _close, body) {
+        return new core.IncrementalForStatement(declaration.ast(), test.ast(), increment.ast(), body.ast())
     },
 
     Exp_binary(left, op, right) {
@@ -148,7 +156,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Type_list(_start, type, _end) {
-        return new core.List(type.ast());
+        return new core.ListType(type.ast());
     },
 
     id(_first, _rest) {

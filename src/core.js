@@ -18,8 +18,8 @@ export class Block {
 }
 
 export class VariableDeclaration {
-    constructor(variable, type, initializer) {
-        Object.assign(this, { variable, type, initializer });
+    constructor(variable, type, initializer, readOnly) {
+        Object.assign(this, { variable, type, initializer, readOnly });
     }
 }
 
@@ -50,6 +50,18 @@ export class Increment {
 export class WhileStatement {
     constructor(test, body) {
         Object.assign(this, { test, body });
+    }
+}
+
+export class IncrementalForStatement {
+    constructor(declaration, test, increment, body){
+        Object.assign(this, { declaration, test, increment, body })
+    }
+}
+
+export class ElementwiseForStatement {
+    constructor(declaration, elementId, collection, body) {
+        Object.assign(this, { declaration, elementId, collection, body })
     }
 }
 
@@ -97,7 +109,7 @@ export class UnaryExpression {
     }
 }
 
-export class List {
+export class ListType {
     constructor(type) {
         Object.assign(this, { type });
     }
