@@ -7,7 +7,7 @@ proc main ([string] args) {
     set aSquared: num = square(num(args[0]));                       $ Constant variables are bound with "set", and can be declared in the same line. Also, type casting!
     set bSquared: num = () -> {num(args[1]) * num(args[1])};        $ We've got lambdas!
     now cSquared: num = aSquared + bSquared;                        $ Mutable variables are bound with "now"
-    printHypoteneuse(aSquared, bSquared, cSquared)
+    printHypoteneuse(aSquared, bSquared, cSquared);
 }
 
 
@@ -16,9 +16,9 @@ num square(num toSquare) {                                          $ Functions 
 }
 
 proc printHypoteneuse(num aSquared, num bSquared, num cSquared) {   $ Procedures do not return values
-    num c = cSquared^(1/2);
-    string mathSummary = `#{aSquared} + #{bSquared} = #{cSquared}   $ String interpolation!
-    Therefore, the length of the hypoteneuse is #{c}.`;             $ And multiline strings!
+    set c: num = cSquared^(1/2);
+    set mathSummary: string = `#{aSquared} + #{bSquared} = #{cSquared}   
+    Therefore, the length of the hypoteneuse is #{c}.`;             $ String interpolation and multiline strings!
     
     print(mathSummary);
 }
