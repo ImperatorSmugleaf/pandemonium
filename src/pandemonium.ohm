@@ -8,6 +8,7 @@ Pandemonium {
                 | while "(" Exp ")" Block                       -- while
                 | ProcCall                                  
                 | ForLoop
+                | IfThen
                 | Assignment ";"                                -- assignment
     Type        = numType | bool | stringType                   
                 | "[" Type "]"                                  -- list
@@ -27,6 +28,12 @@ Pandemonium {
                 | Variable ("++" | "--")                        -- postfix
     ForLoop     = for "(" Vardec id in Variable ")" Block       -- elementwise
                 | for "(" Vardec Exp ";" Exp ")" Block          -- incremental
+    IfThen      = if "(" Exp ")" Block ElseIf                   -- complex
+                | if "(" Exp ")" Block                          -- simple
+    ElseIf      = elif "(" Exp ")" Block ElseIf                 -- complex
+                | elif "(" Exp ")" Block                        -- simple
+                | ThenElse                                      
+    ThenElse    = else Block
 
 
     Exp         = Exp "||" Exp2                                 -- binary
@@ -55,13 +62,18 @@ Pandemonium {
                 | id
                 | str
                 | "[" Args "]"                                  -- list
+                | Lambda
                 | "(" Exp ")"                                   -- grouping
     
     FuncCall    = id "(" Args ")"
     ProcCall    = id "(" Args ")" ";"
+
+    Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
+                | "(" Params ")" "[" Captures "]" "->" (Exp | Block)    -- capturing
     
     Params      = ListOf<Param, ",">
     Args        = ListOf<Exp, ",">
+    Captures    = ListOf<Variable, ",">
     Param       = Type id
 
     idchar      = "_" | alnum

@@ -47,6 +47,18 @@ export class Increment {
     }
 }
 
+export class IfStatement {
+    constructor(test, consequent, alternate=null) {
+        Object.assign(this, { test, consequent, alternate })
+    }
+}
+
+export class ElseStatement {
+    constructor(body) {
+        Object.assign(this, { body })
+    }
+}
+
 export class WhileStatement {
     constructor(test, body) {
         Object.assign(this, { test, body });
@@ -94,6 +106,12 @@ export class FunctionCall {
 export class ProcedureCall {
     constructor(callee, args) {
         Object.assign(this, { callee, args });
+    }
+}
+
+export class LambdaExpression {
+    constructor(params, body, captures = null) {
+        Object.assign(this, { params, body, captures })
     }
 }
 

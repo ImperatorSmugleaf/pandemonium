@@ -99,6 +99,26 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.IncrementalForStatement(declaration.ast(), test.ast(), increment.ast(), body.ast())
     },
 
+    IfThen_simple(_if, _open, test, _close, body) {
+        return new core.IfStatement(test.ast(), body.ast())
+    },
+
+    IfThen_complex(_if, _open, test, _close, body, nextStatement) {
+        return new core.IfStatement(test.ast(), body.ast(), nextStatement.ast())
+    },
+
+    ElseIf_simple(_elif, _open, test, _close, body) {
+        return new core.IfStatement(test.ast(), body.ast())
+    },
+
+    ElseIf_complex(_elif, _open, test, _close, body, nextStatement) {
+        return new core.IfStatement(test.ast(), body.ast(), nextStatement.ast())
+    },
+
+    ThenElse(_else, body) {
+        return new core.ElseStatement(body.ast())
+    },
+
     Exp_binary(left, op, right) {
         return new core.BinaryExpression(op.ast(), left.ast(), right.ast());
     },
@@ -149,6 +169,14 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     ProcCall(callee, _open, args, _close, _semicolon) {
         return new core.ProcedureCall(callee.ast(), args.ast());
+    },
+
+    Lambda_base(_open, params, _close, _arrow, body) {
+        return new core.LambdaExpression(params.ast(), body.ast())
+    },
+
+    Lambda_capturing(_open, params, _close, _capstart, captures, _capend, _arrow, body) {
+        return new core.LambdaExpression(params.ast(), body.ast(), captures.ast())
     },
 
     Param(type, id) {
