@@ -2,7 +2,7 @@ $ A preview of classes, structs, and equality operators!
 
 proc main([string] args) {
     set fido: Dog = Dog("Fido", "Yellow");
-    set fidoVariant: Dog = fido                         $ Structs are passed by copy
+    set fidoVariant: Dog = fido;                        $ Structs are passed by copy
     set fidoTheSecond: Dog = Dog("Fido", "Yellow");
     
     set felix: Cat = new Cat("Felix", "Black");
