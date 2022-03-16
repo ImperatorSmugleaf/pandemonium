@@ -10,14 +10,15 @@ Pandemonium {
                 | ForLoop
                 | IfThen
                 | Assignment ";"                                -- assignment
-    Type        = numType | bool | stringType                   
+    Type        = numType | bool | stringType | id                   
                 | "[" Type "]"                                  -- list
     Variable    = Variable "[" Exp "]"                          -- subscript
                 | Variable "." Exp                              -- memberaccess
+                | new id "(" Args ")"                           -- instantiation
                 | id
-    Declaration = Vardec | Funcdec
-    Vardec      = now id ":" Type "=" Exp ";"                   -- mutable
-                | set id ":" Type "=" Exp ";"	                -- immutable
+    Declaration = Vardec | Funcdec | StructDec | ClassDec
+    Vardec      = now CallId ":" Type "=" Exp ";"               -- mutable
+                | set CallId ":" Type "=" Exp ";"	            -- immutable
     Funcdec     = Type id "(" Params ")" Block                  -- function
                 | proc id "(" Params ")" Block                  -- procedure
     Assignment  = Increment                                     
@@ -34,6 +35,10 @@ Pandemonium {
                 | elif "(" Exp ")" Block                        -- simple
                 | ThenElse                                      
     ThenElse    = else Block
+    StructDec   = struct id ObjectBlock
+    ClassDec    = class id ObjectBlock
+    ObjectBlock = "{" (Statement | VisibilityLabel)+ "}"
+    VisibilityLabel = (public | private) ":"
 
 
     Exp         = Exp "||" Exp2                                 -- binary
@@ -59,14 +64,17 @@ Pandemonium {
                 | false
                 | FuncCall
                 | Variable
-                | id
                 | str
                 | "[" Args "]"                                  -- list
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
     
-    FuncCall    = id "(" Args ")"
-    ProcCall    = id "(" Args ")" ";"
+    FuncCall    = CallId "(" Args ")"
+    ProcCall    = CallId "(" Args ")" ";"
+    //TODO: fix ambiguity
+    CallId      = CallId "." CallId                             -- memberaccess
+                | CallId "[" Exp "]"                            -- listaccess
+                | id                             
 
     Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
                 | "(" Params ")" "[" Captures "]" "->" (Exp | Block)    -- capturing
@@ -95,6 +103,12 @@ Pandemonium {
     print       = "print" ~idchar
     in          = "in" ~idchar
     is          = "is" ~idchar
+    struct      = "struct" ~idchar
+    class       = "class" ~idchar
+    public      = "public" ~idchar
+    private     = "private" ~idchar
+    new         = "new" ~idchar
+
     str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter              -- oneline
                 | multiLineDelimiter (~multiLineDelimiter any)* multiLineDelimiter  -- multiline
     character   = ~"\"" ~"\n" any
