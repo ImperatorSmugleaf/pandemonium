@@ -71,9 +71,9 @@ Pandemonium {
     
     FuncCall    = CallId "(" Args ")"
     ProcCall    = CallId "(" Args ")" ";"
-    //TODO: fix ambiguity
-    CallId      = CallId "." CallId                             -- memberaccess
-                | CallId "[" Exp "]"                            -- listaccess
+    CallId      = CallId1 "." CallId                            -- memberaccess
+                | id
+    CallId1     = CallId "[" Exp "]"                            -- listaccess
                 | id                             
 
     Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
