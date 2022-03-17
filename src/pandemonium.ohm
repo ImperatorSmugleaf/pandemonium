@@ -12,9 +12,11 @@ Pandemonium {
                 | Assignment ";"                                -- assignment
     Type        = numType | bool | stringType | id                   
                 | "[" Type "]"                                  -- list
-    Variable    = Variable "[" Exp "]"                          -- subscript
+    Variable    = Variable "[" Exp ":" Exp "]"                  -- slice
+                | Variable "[" Exp "]"                          -- subscript
                 | Variable "." Exp                              -- memberaccess
                 | new id "(" Args ")"                           -- instantiation
+                | "<-" Variable                                 -- unpacking
                 | id
     Declaration = Vardec | Funcdec | StructDec | ClassDec
     Vardec      = now CallId ":" Type "=" Exp ";"               -- mutable
@@ -41,9 +43,9 @@ Pandemonium {
     VisibilityLabel = (public | private) ":"
 
 
-    Exp         = Exp "||" Exp2                                 -- binary
+    Exp         = Exp "or" Exp2                                 -- binary
                 | Exp2
-    Exp2        = Exp2 "&&" Exp3                                -- binary
+    Exp2        = Exp2 "and" Exp3                                -- binary
                 | Exp3
     Exp3        = Exp4 ("=="|"!=") Exp4                         -- binary
                 | Exp4
@@ -62,9 +64,10 @@ Pandemonium {
     Exp10       = num
                 | true
                 | false
+                | TemplateLiteral
+                | str
                 | FuncCall
                 | Variable
-                | str
                 | "[" Args "]"                                  -- list
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
@@ -109,11 +112,16 @@ Pandemonium {
     private     = "private" ~idchar
     new         = "new" ~idchar
 
-    str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter              -- oneline
-                | multiLineDelimiter (~multiLineDelimiter any)* multiLineDelimiter  -- multiline
+    str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter
     character   = ~"\"" ~"\n" any
-    multiLineDelimiter = "`"
     strDelimiter = "\""
+
+    templateLiteralDelimiter = "`"
+    TemplateLiteral     = templateLiteralDelimiter TemplateLiteralBody
+    TemplateLiteralBody = ~templateLiteralDelimiter "#" "{" Exp "}" TemplateLiteralBody -- expression
+                        | ~templateLiteralDelimiter any TemplateLiteralBody             -- character
+                        | templateLiteralDelimiter
+    
     id          = ~keyword letter idchar*
     keyword     = now | set | numType | bool | stringType | if | else
                 | for | while | yeet | nope | in
