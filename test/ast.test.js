@@ -22,7 +22,7 @@ proc main([string] args) {
     count += 10;
     count -= 5;
     count = cube(count);
-    count = !(124.623E-12) || ((2 < 4) == false && 6++ + 12 * 10 ^ ++0 );
+    count = !(124.623E-12) or ((2 < 4) == false and 6++ + 12 * 10 ^ ++0 );
     print(oneThroughFive.pop());
     success();
 }
@@ -53,9 +53,9 @@ const expected = `   1 | Program statements=[#2,#4,#5,#36]
   19 | Assignment target=(Id,"count") operator=(Sym,"=") source=#20
   20 | FunctionCall callee=(Id,"cube") args=[(Id,"count")]
   21 | Assignment target=(Id,"count") operator=(Sym,"=") source=#22
-  22 | BinaryExpression op=(Sym,"||") left=#23 right=#24
+  22 | BinaryExpression op=(Sym,"or") left=#23 right=#24
   23 | UnaryExpression op=(Sym,"!") operand=(Num,"124.623E-12")
-  24 | BinaryExpression op=(Sym,"&&") left=#25 right=#27
+  24 | BinaryExpression op=(Sym,"and") left=#25 right=#27
   25 | BinaryExpression op=(Sym,"==") left=#26 right=(Bool,"false")
   26 | BinaryExpression op=(Sym,"<") left=(Num,"2") right=(Num,"4")
   27 | BinaryExpression op=(Sym,"+") left=#28 right=#29
