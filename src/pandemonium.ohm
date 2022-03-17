@@ -14,13 +14,13 @@ Pandemonium {
                 | "[" Type "]"                                  -- list
     Variable    = Variable "[" Exp ":" Exp "]"                  -- slice
                 | Variable "[" Exp "]"                          -- subscript
-                | Variable "." Exp                              -- memberaccess
+                | (Variable | this) "." Exp                     -- memberaccess
                 | new id "(" Args ")"                           -- instantiation
                 | "<-" Variable                                 -- unpacking
                 | id
     Declaration = Vardec | Funcdec | StructDec | ClassDec
-    Vardec      = now CallId ":" Type "=" Exp ";"               -- mutable
-                | set CallId ":" Type "=" Exp ";"	            -- immutable
+    Vardec      = now VarName ":" Type "=" Exp ";"              -- mutable
+                | set VarName ":" Type "=" Exp ";"	            -- immutable
     Funcdec     = Type id "(" Params ")" Block                  -- function
                 | proc id "(" Params ")" Block                  -- procedure
     Assignment  = Increment                                     
@@ -45,7 +45,7 @@ Pandemonium {
 
     Exp         = Exp "or" Exp2                                 -- binary
                 | Exp2
-    Exp2        = Exp2 "and" Exp3                                -- binary
+    Exp2        = Exp2 "and" Exp3                               -- binary
                 | Exp3
     Exp3        = Exp4 ("=="|"!=") Exp4                         -- binary
                 | Exp4
@@ -72,11 +72,12 @@ Pandemonium {
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
     
-    FuncCall    = CallId "(" Args ")"
-    ProcCall    = CallId "(" Args ")" ";"
-    CallId      = CallId1 "." CallId                            -- memberaccess
+    FuncCall    = VarName "(" Args ")"
+    ProcCall    = VarName "(" Args ")" ";"
+    VarName      = VarName1 "." VarName                         -- memberaccess
                 | id
-    CallId1     = CallId "[" Exp "]"                            -- listaccess
+    VarName1     = VarName "[" Exp "]"                          -- listaccess
+                | this
                 | id                             
 
     Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
@@ -111,9 +112,9 @@ Pandemonium {
     public      = "public" ~idchar
     private     = "private" ~idchar
     new         = "new" ~idchar
+    this        = "this" ~idchar
 
     str         = strDelimiter (~strDelimiter ~"\n" any)* strDelimiter
-    character   = ~"\"" ~"\n" any
     strDelimiter = "\""
 
     templateLiteralDelimiter = "`"
@@ -123,8 +124,11 @@ Pandemonium {
                         | templateLiteralDelimiter
     
     id          = ~keyword letter idchar*
-    keyword     = now | set | numType | bool | stringType | if | else
-                | for | while | yeet | nope | in
+    keyword     = now | set | true | false | numType | bool 
+                | stringType | proc | for | while | if | else 
+                | for | while | if | elif | else | yeet | nope 
+                | print | in | is | struct | class | public
+                | private | new | this
     num         = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
     space       += "$" (~"\n" any)* ("\n" | end)                -- comment
 }
