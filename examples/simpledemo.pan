@@ -5,7 +5,7 @@ proc main ([string] args) {
         skrrt("This program requires two numbers as input.");       $ Print something to the console and abort immediately
     }
     set aSquared: num = square(num(args[0]));                       $ Constant variables are bound with "set", and can be declared in the same line. Also, type casting!
-    set bSquared: num = () -> {num(args[1]) * num(args[1])};        $ We've got lambdas!
+    set bSquared: num = () [args] -> {num(args[1]) * num(args[1])}; $ We've got lambdas!
     now cSquared: num = aSquared + bSquared;                        $ Mutable variables are bound with "now"
     printHypoteneuse(aSquared, bSquared, cSquared);
 }

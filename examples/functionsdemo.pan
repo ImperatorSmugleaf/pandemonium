@@ -12,7 +12,7 @@ struct Circle {
         now this.radius: num = radius;
     }
 
-    now area: num = () -> {this.radius^2};                      $ Variables can be equal to functions!
+    now area: num = () [this] -> {this.radius^2};               $ Variables can be equal to functions!
 }
 
 bool isPalindrome(string word) {                                $ Recursion!

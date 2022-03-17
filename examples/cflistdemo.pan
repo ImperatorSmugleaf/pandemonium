@@ -2,7 +2,7 @@ $ The basics of control flow and list manipulation!
 
 proc main([string] args) {
     set favoriteNumbers: [num] = [3, 4, 5, 7];
-    for (number in favoriteNumbers) {
+    for (set number: num = fav; fav in favoriteNumbers) {
         print("#{number} is a great number!");
     }
     
