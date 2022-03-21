@@ -47,7 +47,7 @@ export class Increment {
     }
 }
 
-export class IfStatement {
+export class ConditionalStatement {
     constructor(test, consequent, alternate=null) {
         Object.assign(this, { test, consequent, alternate })
     }
@@ -130,6 +130,24 @@ export class UnaryExpression {
 export class ListType {
     constructor(type) {
         Object.assign(this, { type });
+    }
+}
+
+export class UnpackedVariable {
+    constructor(variable) {
+        Object.assign(this, { variable })
+    }
+}
+
+export class ObjectInstantiation {
+    constructor(objType, args) {
+        Object.assign(this, { objType, args })
+    }
+}
+
+export class TemplateLiteral {
+    constructor(body) {
+        Object.assign(this, { body })
     }
 }
 

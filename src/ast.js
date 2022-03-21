@@ -91,6 +91,14 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.MemberAccess(variable.ast(), property.ast());
     },
 
+    Variable_instantiation(_new, objType, _open, args, _close) {
+        return new core.ObjectInstantiation(objType.ast(), args.ast())
+    },
+
+    Variable_unpacking(_unpack, variable) {
+        return new core.UnpackedVariable(variable.ast());
+    },
+
     ForLoop_elementwise(_for, _open, declaration, elementId, _in, collection, _close, body) {
         return new core.ElementwiseForStatement(declaration.ast(), elementId.ast(), collection.ast(), body.ast());
     },
@@ -100,23 +108,31 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     IfThen_simple(_if, _open, test, _close, body) {
-        return new core.IfStatement(test.ast(), body.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast())
     },
 
     IfThen_complex(_if, _open, test, _close, body, nextStatement) {
-        return new core.IfStatement(test.ast(), body.ast(), nextStatement.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast(), nextStatement.ast())
     },
 
     ElseIf_simple(_elif, _open, test, _close, body) {
-        return new core.IfStatement(test.ast(), body.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast())
     },
 
     ElseIf_complex(_elif, _open, test, _close, body, nextStatement) {
-        return new core.IfStatement(test.ast(), body.ast(), nextStatement.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast(), nextStatement.ast())
     },
 
     ThenElse(_else, body) {
         return new core.ElseStatement(body.ast())
+    },
+
+    VarName_memberaccess(source, _dot, member) {
+        return new core.MemberAccess(source.ast(), member.ast());
+    },
+
+    VarName1_listaccess(source, _open, member, _close){
+        return new core.MemberAccess(source.ast(), member.ast());
     },
 
     Exp_binary(left, op, right) {
@@ -187,6 +203,18 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.ListType(type.ast());
     },
 
+    TemplateLiteral(_begin, body, _end) {
+        return body.asIteration().ast()
+    },
+
+    TemplateLiteralStmt_expression(_open, exp, _close) {
+        return exp.ast()
+    },
+
+    TemplateLiteralStmt_str(_first, _rest) {
+        return new core.Token("String", this.source)
+    },
+
     id(_first, _rest) {
         return new core.Token("Id", this.source);
     },
@@ -203,7 +231,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.Token("Num", this.source);
     },
 
-    str(_string) {
+    str(_start, _str, _end) {
         return new core.Token("String", this.source);
     },
 
