@@ -64,8 +64,8 @@ const expected = `   1 | Program statements=[#2,#4,#5,#36]
   30 | BinaryExpression op=(Sym,"^") left=(Num,"10") right=#31
   31 | UnaryExpression op=(Sym,"++") operand=(Num,"0")
   32 | PrintStatement argument=[#33]
-  33 | MemberAccess object=(Id,"oneThroughFive") property=#34
-  34 | FunctionCall callee=(Id,"pop") args=[]
+  33 | FunctionCall callee=#34 args=[]
+  34 | MemberAccess object=(Id,"oneThroughFive") property=(Id,"pop")
   35 | ProcedureCall callee=(Id,"success") args=[]
   36 | FunctionDeclaration type=(Sym,"num") func=(Id,"cube") params=[#37] body=#38
   37 | Parameter type=(Sym,"num") id=(Id,"x")
