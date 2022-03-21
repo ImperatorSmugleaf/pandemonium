@@ -118,10 +118,9 @@ Pandemonium {
     strDelimiter = "\""
 
     templateLiteralDelimiter = "`"
-    TemplateLiteral     = templateLiteralDelimiter TemplateLiteralBody
-    TemplateLiteralBody = ~templateLiteralDelimiter "#" "{" Exp "}" TemplateLiteralBody -- expression
-                        | ~templateLiteralDelimiter any TemplateLiteralBody             -- character
-                        | templateLiteralDelimiter
+    TemplateLiteral     = templateLiteralDelimiter TemplateLiteralStmt+ templateLiteralDelimiter
+    TemplateLiteralStmt = ~templateLiteralDelimiter "#{" Exp "}" -- expression
+                        | ~templateLiteralDelimiter any (~"#{" ~templateLiteralDelimiter any)* -- str
     
     id          = ~keyword letter idchar*
     keyword     = now | set | true | false | numType | bool 
