@@ -14,7 +14,7 @@ const syntaxChecks = [
     ["all arithmetic operators", "now x: num = (!3) * 2 + 4 - (-7.3) * 8 ^ 13 / 1;"],
     [
         "all relational operators",
-        "now x: bool = 1<(2<=(3==(4!=(5 >= (6>(7C<(8C=(9in(10)))))))));",
+        "now x: bool = 1<(2<=(3==(4!=(5 >= (6>(7C<(8C=(9in(10is(11))))))))));",
     ],
     ["all logical operators", "now x: bool = true and false or (!false);"],
     ["end of program inside comment", "print(0); $ yay"],
