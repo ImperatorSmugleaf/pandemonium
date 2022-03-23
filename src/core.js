@@ -151,6 +151,12 @@ export class TemplateLiteral {
     }
 }
 
+export class ObjectFieldDeclaration {
+    constructor(id) {
+        Object.assign(this, { type, id })
+    }
+}
+
 //Token objects
 export class Token {
     constructor(category, source) {

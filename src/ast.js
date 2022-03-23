@@ -46,6 +46,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), true);
     },
 
+    InstanceField(id, _semi) {
+        return new core.ObjectFieldDeclaration(id.ast());
+    },
+
     Funcdec_function(type, id, _open, params, _close, block) {
         return new core.FunctionDeclaration(
             type.ast(),
@@ -133,6 +137,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     VarName1_listaccess(source, _open, member, _close){
         return new core.MemberAccess(source.ast(), member.ast());
+    },
+
+    VarDecId_instance(source, _dot, member) {
+        return new core.MemberAccess(source.ast(), member.ast())
     },
 
     Exp_binary(left, op, right) {

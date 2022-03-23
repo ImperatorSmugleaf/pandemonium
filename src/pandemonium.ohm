@@ -19,8 +19,8 @@ Pandemonium {
                 | "<-" Variable                                 -- unpacking
                 | id
     Declaration = Vardec | Funcdec | StructDec | ClassDec
-    Vardec      = now VarName ":" Type "=" Exp ";"              -- mutable
-                | set VarName ":" Type "=" Exp ";"	            -- immutable
+    Vardec      = now VarDecId ":" Type "=" Exp ";"             -- mutable
+                | set VarDecId ":" Type "=" Exp ";"	            -- immutable
     Funcdec     = Type id "(" Params ")" Block                  -- function
                 | proc id "(" Params ")" Block                  -- procedure
     Assignment  = Increment                                     
@@ -39,8 +39,9 @@ Pandemonium {
     ThenElse    = else Block
     StructDec   = struct id ObjectBlock
     ClassDec    = class id ObjectBlock
-    ObjectBlock = "{" (Statement | VisibilityLabel)+ "}"
+    ObjectBlock = "{" (Statement | VisibilityLabel | InstanceField)+ "}"
     VisibilityLabel = (public | private) ":"
+    InstanceField = id ";"
 
 
     Exp         = Exp "or" Exp2                                 -- binary
@@ -74,11 +75,14 @@ Pandemonium {
     
     FuncCall    = VarName "(" Args ")"
     ProcCall    = VarName "(" Args ")" ";"
-    VarName      = VarName1 "." VarName                         -- memberaccess
+    VarName     = VarName1 "." VarName                          -- memberaccess
                 | id
-    VarName1     = VarName "[" Exp "]"                          -- listaccess
+    VarName1    = VarName "[" Exp "]"                           -- listaccess
                 | this
                 | id                             
+    
+    VarDecId    = this "." id                                   -- instance
+                | id
 
     Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
                 | "(" Params ")" "[" Captures "]" "->" (Exp | Block)    -- capturing
