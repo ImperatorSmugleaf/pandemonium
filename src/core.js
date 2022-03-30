@@ -5,6 +5,7 @@
 
 import util from "util";
 
+// ------ AST NODES ------
 export class Program {
     constructor(statements) {
         Object.assign(this, { statements });
@@ -157,7 +158,6 @@ export class ObjectFieldDeclaration {
     }
 }
 
-//Token objects
 export class Token {
     constructor(category, source) {
         Object.assign(this, { category, source });
@@ -172,6 +172,64 @@ export class Parameter {
         Object.assign(this, { type, id });
     }
 }
+
+
+// ------ ANALYZER CLASSES ------
+export class Variable {
+    constructor(name, type, readOnly) {
+        Object.assign(this, { name, type, readOnly })
+    }
+}
+
+export class Type {
+    // Type of all basic types
+    static BOOL = new Type("bool")
+    static NUM = new Type("num")
+    static STRING = new Type("string")
+    constructor(description) {
+        Object.assign(this, { description })
+    }
+}
+
+export class Function {
+    // Generated when processing a function declaration
+    constructor(name, parameters, returnType) {
+        Object.assign(this, { name, parameters, returnType })
+    }
+}
+
+export class Procedure {
+    // Generated when processing a procedure declaration
+    constructor(name, parameters) {
+        Object.assign(this, { name, parameters })
+    }
+}
+
+export class TypeList extends Type {
+    // Type of a list containing any type
+    constructor(baseType) {
+        super(`[${baseType.description}]`)
+        this.baseType = baseType
+    }
+}
+
+export class StructType {
+    // Generated when processing a struct declaration
+    constructor(name, fields) {
+        Object.assign(this, { name, fields })
+    }
+}
+
+export class ClassType extends Type {
+    // Generated when processing a class declaration
+    constructor(name, fields) {
+        super(name.lexeme)
+        Object.assign(this, { fields })
+    }
+}
+
+
+
 
 //Dr. Toal's error message-er utilizing Ohm's API.
 /* c8 ignore next 47 */
