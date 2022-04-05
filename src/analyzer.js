@@ -411,54 +411,40 @@ import {
     BinaryExpression(e) {
       this.analyze(e.left)
       this.analyze(e.right)
-      if (["&", "|", "^", "<<", ">>"].includes(e.op.lexeme)) {
-        checkInteger(e.left)
-        checkInteger(e.right)
-        e.type = Type.INT
-      } else if (["+"].includes(e.op.lexeme)) {
-        checkNumericOrString(e.left)
-        checkHaveSameType(e.left, e.right)
-        e.type = e.left.type
-      } else if (["-", "*", "/", "%", "**"].includes(e.op.lexeme)) {
+      if (["^", "-", "*", "//", "/", "%", "+"].includes(e.op.lexeme)) {
         checkNumeric(e.left)
         checkHaveSameType(e.left, e.right)
         e.type = e.left.type
       } else if (["<", "<=", ">", ">="].includes(e.op.lexeme)) {
-        checkNumericOrString(e.left)
+        checkNumeric(e.left)
         checkHaveSameType(e.left, e.right)
         e.type = Type.BOOLEAN
-      } else if (["==", "!="].includes(e.op.lexeme)) {
+      } else if (["==", "!=", "is"].includes(e.op.lexeme)) {
         checkHaveSameType(e.left, e.right)
         e.type = Type.BOOLEAN
-      } else if (["&&", "||"].includes(e.op.lexeme)) {
+      } else if (["or", "and"].includes(e.op.lexeme)) {
         checkBoolean(e.left)
         checkBoolean(e.right)
         e.type = Type.BOOLEAN
-      } else if (["??"].includes(e.op.lexeme)) {
-        checkIsAnOptional(e.left)
-        checkAssignable(e.right, { toType: e.left.type.baseType })
-        e.type = e.left.type
+      } else if (["C=", "C<"].includes(e.op.lexeme)) {
+        checkList(e.right)
+        checkList(e.left)
+        e.type = Type.BOOLEAN
+      } else if (["in"].includes(e.op.lexeme)) {
+        checkList(e.right)
+        checkHaveSameType(e.left, e.right.baseType)
+        e.type = Type.BOOLEAN
       }
     }
     UnaryExpression(e) {
       this.analyze(e.operand)
-      if (e.op.lexeme === "#") {
-        checkList(e.operand)
-        e.type = Type.INT
-      } else if (e.op.lexeme === "-") {
+      if (["-", "++", "--"].includes(e.op.lexeme)) {
         checkNumeric(e.operand)
         e.type = e.operand.type
       } else if (e.op.lexeme === "!") {
         checkBoolean(e.operand)
         e.type = Type.BOOLEAN
-      } else {
-        // Operator is "some"
-        e.type = new OptionalType(e.operand.type?.value ?? e.operand.type)
       }
-    }
-    EmptyOptional(e) {
-      this.analyze(e.baseType)
-      e.type = new OptionalType(e.baseType?.value ?? e.baseType)
     }
     SubscriptExpression(e) {
       this.analyze(e.array)
