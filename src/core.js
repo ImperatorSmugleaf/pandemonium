@@ -19,8 +19,8 @@ export class Block {
 }
 
 export class VariableDeclaration {
-    constructor(variable, type, initializer, readOnly) {
-        Object.assign(this, { variable, type, initializer, readOnly });
+    constructor(id, type, initializer, readOnly) {
+        Object.assign(this, { id, type, initializer, readOnly });
     }
 }
 
