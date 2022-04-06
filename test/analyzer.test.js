@@ -12,7 +12,7 @@ const semanticChecks = [
   ["variable declarations", 'set x: int = 1; now y: bool = "false";'],
   ["complex array types", "num f(x: [[[int]]]) {yeet 3;}"],
   ["increment and decrement", "now x: int = 10; x--; x++;"],
-  ["initialize with empty array", "let a = [](of int);"],
+  ["initialize with empty array", "const a: [int] = [];"],
   ["type declaration", "struct S {f: (int)->boolean? g: string}"],
   ["assign arrays", "now a: [int] = [];now b: [int] = [1];a=b;b=a;"],
   ["assign to array element", "set a: [int] = [1,2,3]; a[1]=100;"],
