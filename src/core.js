@@ -25,14 +25,14 @@ export class VariableDeclaration {
 }
 
 export class FunctionDeclaration {
-    constructor(type, func, params, body) {
-        Object.assign(this, { type, func, params, body });
+    constructor(type, func, parameters, body) {
+        Object.assign(this, { type, func, parameters, body });
     }
 }
 
 export class ProcedureDeclaration {
-    constructor(proc, params, body) {
-        Object.assign(this, { proc, params, body });
+    constructor(proc, parameters, body) {
+        Object.assign(this, { proc, parameters, body });
     }
 }
 
