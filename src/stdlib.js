@@ -9,12 +9,20 @@
 import { Procedure, Type, Variable } from "./core.js";
 
 function builtinFunc(name, returnType) {
-    return Object.assign(new Function(name, returnType))
+    return new Function(name, returnType)
 }
 
 function builtinProc(name) {
-    return Object.assign(new Procedure(name))
+    return new Procedure(name)
 }
+
+const builtins = Object.freeze({
+    num: Type.NUM,
+    bool: Type.BOOL,
+    string: Type.STRING,
+    print: builtinProc("print"),
+    skrrt: builtinProc("skrrt")
+})
 
 const listMethods = Object.freeze({
     preadd: builtinProc("preadd"),
@@ -28,11 +36,7 @@ const stringMethods = Object.freeze({
 })
 
 export const fundamentum = Object.freeze({
-    num: Type.NUM,
-    bool: Type.BOOL,
-    string: Type.STRING,
-    print: builtinProc("print"),
-    skrrt: builtinProc("skrrt"),
+    builtins,
     stringMethods,
     listMethods
 })
