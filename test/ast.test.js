@@ -33,14 +33,14 @@ num cube(num x) {
 }`;
 
 const expected = `   1 | Program statements=[#2,#4,#5,#36]
-   2 | VariableDeclaration variable=(Id,"oneThroughFive") type=#3 initializer=[(Num,"1"),(Num,"2"),(Num,"3"),(Num,"4"),(Num,"5")] readOnly=true
+   2 | VariableDeclaration id=(Id,"oneThroughFive") type=#3 initializer=[(Num,"1"),(Num,"2"),(Num,"3"),(Num,"4"),(Num,"5")] readOnly=true
    3 | ListDeclaration type=(Sym,"num")
-   4 | VariableDeclaration variable=(Id,"counting") type=(Sym,"bool") initializer=(Bool,"true") readOnly=true
+   4 | VariableDeclaration id=(Id,"counting") type=(Sym,"bool") initializer=(Bool,"true") readOnly=true
    5 | ProcedureDeclaration proc=(Id,"main") parameters=[#6] body=#8
    6 | Parameter type=#7 id=(Id,"args")
    7 | ListDeclaration type=(Sym,"string")
    8 | Block statements=[#9,#10,#17,#18,#19,#21,#32,#35]
-   9 | VariableDeclaration variable=(Id,"count") type=(Sym,"num") initializer=(Num,"0") readOnly=false
+   9 | VariableDeclaration id=(Id,"count") type=(Sym,"num") initializer=(Num,"0") readOnly=false
   10 | WhileStatement test=(Id,"counting") body=#11
   11 | Block statements=[#12,#14,#15,#16]
   12 | PrintStatement argument=[#13]
@@ -70,7 +70,7 @@ const expected = `   1 | Program statements=[#2,#4,#5,#36]
   36 | FunctionDeclaration type=(Sym,"num") func=(Id,"cube") parameters=[#37] body=#38
   37 | Parameter type=(Sym,"num") id=(Id,"x")
   38 | Block statements=[#39,#42]
-  39 | VariableDeclaration variable=(Id,"triple") type=(Sym,"num") initializer=#40 readOnly=true
+  39 | VariableDeclaration id=(Id,"triple") type=(Sym,"num") initializer=#40 readOnly=true
   40 | BinaryExpression op=(Sym,"*") left=#41 right=(Id,"x")
   41 | BinaryExpression op=(Sym,"*") left=(Id,"x") right=(Id,"x")
   42 | YeetStatement argument=(Id,"triple")`;
