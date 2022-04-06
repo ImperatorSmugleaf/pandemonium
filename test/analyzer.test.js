@@ -20,7 +20,7 @@ const semanticChecks = [
   ["yeet in nested if", "bool f() {if (true) {yeet;}}"],
   ["break in nested if", "while (false) {if (true) {break;}}"],
   ["long if", "if (true) {print(1);} else {print(3);}"],
-  ["else if", "if (true) {print(1);} else if (true) {print(0);} else {print(3);}"],
+  ["elif", "if (true) {print(1);} elif (true) {print(0);} else {print(3);}"],
   ["elementwise for loop", "for(now i: int = el; el in [2,3,5]) {print(1);}"],
   ["incremental for loop", "for(now i: int = 0; i < 10; i++) {print(0);}"],
   ["or", "print(true or 1<2 or false or !true);"],
