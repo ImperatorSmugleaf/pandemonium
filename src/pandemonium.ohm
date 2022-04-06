@@ -17,6 +17,7 @@ Pandemonium {
                 | (Variable | this) "." Exp                     -- memberaccess
                 | new id "(" Args ")"                           -- instantiation
                 | "<-" Variable                                 -- unpacking
+                | "[" Args "]"                                  -- list
                 | id
     Declaration = Vardec | Subrtdec | StructDec | ClassDec
     Vardec      = now VarDecId ":" Type "=" Exp ";"             -- mutable
@@ -69,7 +70,6 @@ Pandemonium {
                 | str
                 | FuncCall
                 | Variable
-                | "[" Args "]"                                  -- list
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
     

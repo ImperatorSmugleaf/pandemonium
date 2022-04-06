@@ -103,6 +103,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.UnpackedVariable(variable.ast());
     },
 
+    Variable_list(_open, args, _close) {
+        return args.asIteration().ast();
+    },
+
     ForLoop_elementwise(_for, _open, declaration, elementId, _in, collection, _close, body) {
         return new core.ElementwiseForStatement(declaration.ast(), elementId.ast(), collection.ast(), body.ast());
     },
@@ -177,10 +181,6 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     Exp9_unary(op, operand) {
         return new core.UnaryExpression(op.ast(), operand.ast());
-    },
-
-    Exp10_list(_open, args, _close) {
-        return args.asIteration().ast();
     },
 
     Exp10_grouping(_open, expression, _close) {
