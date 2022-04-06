@@ -6,7 +6,7 @@
  * to their category.
  */
 
-import { Procedure, Type, Variable } from "./core.js";
+import { Function, Procedure, Type, Variable } from "./core.js";
 
 function builtinFunc(name, returnType) {
     return new Function(name, returnType)
