@@ -292,9 +292,9 @@ import {
       this.analyze(d.type)
       d.func.value = new Function(
         d.func.lexeme,
-        d.parameters,
         d.type
       )
+      d.func.value.parameters = d.parameters
       checkIsAType(d.func.value.returnType)
       // When entering a function body, we must reset the inLoop setting,
       // because it is possible to declare a function inside a loop!
@@ -310,9 +310,9 @@ import {
     }
     ProcedureDeclaration(d) {
       d.proc.value = new Procedure(
-        d.proc.lexeme,
-        d.parameters
+        d.proc.lexeme
       )
+      d.proc.value.parameters = d.parameters
       const childContext = this.newChildContext({ inLoop: false, subroutine: d.proc.value })
       childContext.analyze(d.proc.value.parameters)
       d.proc.value.type = new ProcedureType(
