@@ -166,10 +166,10 @@ import {
     )
   }
   
-  function checkNotRecursive(struct) {
+  function checkNotRecursive(object) {
     check(
-      !struct.fields.map(f => f.type).includes(struct),
-      "Struct type must not be recursive"
+      !object.fields.map(f => f.type).includes(object),
+      "Struct and class types must not be recursive"
     )
   }
   
@@ -212,14 +212,6 @@ import {
       e.type.constructor == FunctionType,
       "Call of non-function or non-constructor"
     )
-  }
-  
-  function checkReturnsNothing(f) {
-    check(f.type.returnType === Type.VOID, "Something should be returned here")
-  }
-  
-  function checkReturnsSomething(f) {
-    check(f.type.returnType !== Type.VOID, "Cannot return a value here")
   }
   
   function checkReturnable({ expression: e, from: f }) {
