@@ -193,15 +193,15 @@ export class Type {
 
 export class Function {
     // Generated when processing a function declaration
-    constructor(name, parameters, returnType) {
-        Object.assign(this, { name, parameters, returnType })
+    constructor(name, returnType) {
+        Object.assign(this, { name, returnType })
     }
 }
 
 export class Procedure {
     // Generated when processing a procedure declaration
-    constructor(name, parameters) {
-        Object.assign(this, { name, parameters })
+    constructor(name) {
+        Object.assign(this, { name })
     }
 }
 
