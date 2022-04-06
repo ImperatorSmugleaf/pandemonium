@@ -10,7 +10,7 @@ import * as core from "../src/core.js"
 // Programs that are semantically correct
 const semanticChecks = [
   ["variable declarations", 'set x: int = 1; now y: bool = "false";'],
-  ["complex array types", "num f(x: [[[int]]]) {yeet 3;}"],
+  ["complex array types", "num f([[[int]]] x) {yeet 3;}"],
   ["increment and decrement", "now x: int = 10; x--; x++;"],
   ["initialize with empty array", "const a: [int] = [];"],
   ["type declaration", "struct S {string g; num f() {return 1;}}"],
