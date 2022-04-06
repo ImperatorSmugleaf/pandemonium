@@ -19,7 +19,7 @@ describe("The compiler", () => {
         assert(util.format(compiled).startsWith("   1 | Program"));
         done();
     });
-    it("throws if given an unimplemented option other than ast", (done) => {
+    it("throws if given an unimplemented option", (done) => {
         assert.throws(() => compile(sampleProgram, "js"));
         done();
     });
