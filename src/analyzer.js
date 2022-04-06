@@ -268,13 +268,16 @@ import {
       return this[node.constructor.name](node)
     }
     Program(p) {
-      this.analyze(p.body)
+      for(let statement of p.statements){
+        this.analyze(statement)
+      }
     }
     VariableDeclaration(d) {
       this.analyze(d.initializer)
-      d.variable.value = new Variable(d.variable.lexeme, d.modifier.lexeme === "const")
-      d.variable.value.type = d.initializer.type
-      this.add(d.variable.lexeme, d.variable.value)
+      this.analyze(d.type)
+      d.id.value = new Variable(d.id.lexeme, d.type.value, d.readOnly)
+      d.id.value.type = d.initializer.type
+      this.add(d.id.lexeme, d.id.value)
     }
     TypeDeclaration(d) {
       // Add early to allow recursion
