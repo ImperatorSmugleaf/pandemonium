@@ -339,11 +339,11 @@ import {
     }
     Increment(s) {
       this.analyze(s.variable)
-      checkInteger(s.variable)
+      checkNumeric(s.variable)
     }
     Decrement(s) {
       this.analyze(s.variable)
-      checkInteger(s.variable)
+      checkNumeric(s.variable)
     }
     Assignment(s) {
       this.analyze(s.source)
