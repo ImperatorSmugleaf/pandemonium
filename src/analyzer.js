@@ -512,7 +512,7 @@ import {
   
   export default function analyze(node) {
     const initialContext = new Context({})
-    for (const [name, type] of Object.entries(stdlib.contents)) {
+    for (const [name, type] of Object.entries(stdlib.fundamentum)) {
       initialContext.add(name, type)
     }
     initialContext.analyze(node)
