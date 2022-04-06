@@ -18,10 +18,10 @@ Pandemonium {
                 | new id "(" Args ")"                           -- instantiation
                 | "<-" Variable                                 -- unpacking
                 | id
-    Declaration = Vardec | Funcdec | StructDec | ClassDec
+    Declaration = Vardec | Subrtdec | StructDec | ClassDec
     Vardec      = now VarDecId ":" Type "=" Exp ";"             -- mutable
                 | set VarDecId ":" Type "=" Exp ";"	            -- immutable
-    Funcdec     = Type id "(" Params ")" Block                  -- function
+    Subrtdec    = Type id "(" Params ")" Block                  -- function
                 | proc id "(" Params ")" Block                  -- procedure
     Assignment  = Increment                                     
                 | Variable "=" Exp                              -- base

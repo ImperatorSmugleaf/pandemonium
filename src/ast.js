@@ -50,7 +50,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.ObjectFieldDeclaration(id.ast());
     },
 
-    Funcdec_function(type, id, _open, params, _close, block) {
+    Subrtdec_function(type, id, _open, params, _close, block) {
         return new core.FunctionDeclaration(
             type.ast(),
             id.ast(),
@@ -59,7 +59,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         );
     },
 
-    Funcdec_procedure(_proc, id, _open, params, _close, block) {
+    Subrtdec_procedure(_proc, id, _open, params, _close, block) {
         return new core.ProcedureDeclaration(
             id.ast(),
             params.asIteration().ast(),
