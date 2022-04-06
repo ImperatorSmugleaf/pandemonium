@@ -10,14 +10,14 @@ import * as core from "../src/core.js"
 // Programs that are semantically correct
 const semanticChecks = [
   ["variable declarations", 'set x: int = 1; now y: bool = "false";'],
-  ["complex array types", "num f(x: [[[int]]]) {return 3;}"],
+  ["complex array types", "num f(x: [[[int]]]) {yeet 3;}"],
   ["increment and decrement", "now x: int = 10; x--; x++;"],
   ["initialize with empty array", "let a = [](of int);"],
   ["type declaration", "struct S {f: (int)->boolean? g: string}"],
   ["assign arrays", "now a: [int] = [];now b: [int] = [1];a=b;b=a;"],
   ["assign to array element", "set a: [int] = [1,2,3]; a[1]=100;"],
-  ["return", "bool f() { return true; }"],
-  ["return in nested if", "bool f() {if (true) {return;}}"],
+  ["yeet", "bool f() { yeet true; }"],
+  ["yeet in nested if", "bool f() {if (true) {yeet;}}"],
   ["break in nested if", "while (false) {if (true) {break;}}"],
   ["long if", "if (true) {print(1);} else {print(3);}"],
   ["else if", "if (true) {print(1);} else if (true) {print(0);} else {print(3);}"],
@@ -36,14 +36,14 @@ const semanticChecks = [
   ["member exp", "struct S {x: int} now y:S = S(1);print(y.x);"],
   ["subscript exp", "now a: [int]=[1,2];print(a[0]);"],
   ["array of struct", "struct S{} now x:[S]=[S(), S()];"],
-  ["type equivalence of nested arrays", "num f(x: [[int]]) {return 1} print(f([[1],[2]]));"],
+  ["type equivalence of nested arrays", "num f(x: [[int]]) {yeet 1} print(f([[1],[2]]));"],
   [
-    "function return types",
-    `num square(x: int) { return x * x; }
-     bool even(x: int): { return x % 2 == 0; }`,
+    "function yeet types",
+    `num square(x: int) { yeet x * x; }
+     bool even(x: int): { yeet x % 2 == 0; }`,
   ],
-  ["struct parameters", "struct S {} num f(x: S) {return 1}"],
-  ["array parameters", "num f(x: [int]) {return 1}"],
+  ["struct parameters", "struct S {} num f(x: S) {yeet 1}"],
+  ["array parameters", "num f(x: [int]) {yeet 1}"],
   ["outer variable", "set x: int = 1; while(false) {print(x);}"]
 ]
 
@@ -64,18 +64,18 @@ const semanticErrors = [
     "while true {function f() {break;}}",
     /Break can only appear in a loop/,
   ],
-  ["return outside function", "return;", /Return can only appear in a function/],
+  ["yeet outside function", "yeet;", /Return can only appear in a function/],
   [
-    "return value from procedure",
-    "proc f() {return 1;}",
-    /Cannot return a value here/,
+    "yeet value from procedure",
+    "proc f() {yeet 1;}",
+    /Cannot yeet a value here/,
   ],
   [
-    "return nothing from function",
+    "yeet nothing from function",
     "num f() = {}",
-    /Functions must return a value/,
+    /Functions must yeet a value/,
   ],
-  ["return type mismatch", "function f(): int {return false;}", /boolean to a int/],
+  ["yeet type mismatch", "function f(): int {yeet false;}", /boolean to a int/],
   ["non-boolean short if test", "if 1 {}", /Expected a boolean/],
   ["non-boolean if test", "if 1 {} else {}", /Expected a boolean/],
   ["non-boolean while test", "while 1 {}", /Expected a boolean/],
@@ -124,14 +124,14 @@ const semanticErrors = [
   ],
   [
     "function type mismatch",
-    `function f(x: int, y: (boolean)->void): int { return 1; }
-     function g(z: boolean): int { return 5; }
+    `function f(x: int, y: (boolean)->void): int { yeet 1; }
+     function g(z: boolean): int { yeet 5; }
      f(2, g);`,
     /Cannot assign a \(boolean\)->int to a \(boolean\)->void/,
   ],
   ["bad call to stdlib sin()", "print(sin(true));", /Cannot assign a boolean to a float/],
   ["Non-type in param", "let x=1;function f(y:x){}", /Type expected/],
-  ["Non-type in return type", "let x=1;function f():x{return 1;}", /Type expected/],
+  ["Non-type in yeet type", "let x=1;function f():x{yeet 1;}", /Type expected/],
   ["Non-type in field type", "let x=1;struct S {y:x}", /Type expected/],
 ]
 
