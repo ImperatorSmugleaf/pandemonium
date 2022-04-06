@@ -33,11 +33,14 @@ import {
     Variable,
     Type,
     FunctionType,
-    TypeList,
+    ListType,
     StructType,
+    ClassType,
     Function,
+    Procedure,
     Token,
     error,
+    ProcedureType,
   } from "./core.js"
   import * as stdlib from "./stdlib.js"
   
@@ -60,7 +63,7 @@ import {
     },
   })
   
-  Object.assign(TypeList.prototype, {
+  Object.assign(ListType.prototype, {
     isEquivalentTo(target) {
       // [T] equivalent to [U] only when T is equivalent to U.
       return (
@@ -149,7 +152,7 @@ import {
   }
   
   function checkList(e) {
-    check(e.type.constructor === TypeList, "List expected", e)
+    check(e.type.constructor === ListType, "List expected", e)
   }
   
   function checkHaveSameType(e1, e2) {
@@ -203,7 +206,10 @@ import {
   
   function checkCallable(e) {
     check(
-      e.constructor === StructType || e.type.constructor == FunctionType,
+      e.constructor === StructType || 
+      e.constructor === ClassType ||
+      e.type.constructor == ProcedureType ||
+      e.type.constructor == FunctionType,
       "Call of non-function or non-constructor"
     )
   }
@@ -242,8 +248,8 @@ import {
    **************************************/
   
   class Context {
-    constructor({ parent = null, locals = new Map(), inLoop = false, function: f = null }) {
-      Object.assign(this, { parent, locals, inLoop, function: f })
+    constructor({ parent = null, locals = new Map(), inLoop = false, subroutine: f = null }) {
+      Object.assign(this, { parent, locals, inLoop, subroutine: f })
     }
     sees(name) {
       // Search "outward" through enclosing scopes
@@ -291,23 +297,36 @@ import {
       checkIsAType(f.type)
     }
     FunctionDeclaration(d) {
-      if (d.returnType) this.analyze(d.returnType)
-      d.fun.value = new Function(
-        d.fun.lexeme,
+      this.analyze(d.type)
+      d.func.value = new Function(
+        d.func.lexeme,
         d.parameters,
-        d.returnType?.value ?? d.returnType ?? Type.VOID
+        d.type
       )
-      checkIsAType(d.fun.value.returnType)
+      checkIsAType(d.func.value.returnType)
       // When entering a function body, we must reset the inLoop setting,
       // because it is possible to declare a function inside a loop!
-      const childContext = this.newChildContext({ inLoop: false, function: d.fun.value })
-      childContext.analyze(d.fun.value.parameters)
-      d.fun.value.type = new FunctionType(
-        d.fun.value.parameters.map(p => p.type),
-        d.fun.value.returnType
+      const childContext = this.newChildContext({ inLoop: false, subroutine: d.func.value })
+      childContext.analyze(d.func.value.parameters)
+      d.func.value.type = new FunctionType(
+        d.func.value.parameters.map(p => p.type),
+        d.func.value.returnType
       )
       // Add before analyzing the body to allow recursion
-      this.add(d.fun.lexeme, d.fun.value)
+      this.add(d.func.lexeme, d.func.value)
+      childContext.analyze(d.body)
+    }
+    ProcedureDeclaration(d) {
+      d.proc.value = new Procedure(
+        d.proc.lexeme,
+        d.parameters
+      )
+      const childContext = this.newChildContext({ inLoop: false, subroutine: d.proc.value })
+      childContext.analyze(d.proc.value.parameters)
+      d.proc.value.type = new ProcedureType(
+        d.proc.value.parameters.map(p => p.type)
+      )
+      this.add(d.proc.lexeme, d.proc.value)
       childContext.analyze(d.body)
     }
     Parameter(p) {
@@ -345,57 +364,48 @@ import {
     }
     ReturnStatement(s) {
       checkInFunction(this)
-      checkReturnsSomething(this.function)
       this.analyze(s.expression)
-      checkReturnable({ expression: s.expression, from: this.function })
+      checkReturnable({ expression: s.expression, from: this.subroutine })
     }
-    ShortReturnStatement(s) {
-      checkInFunction(this)
-      checkReturnsNothing(this.function)
-    }
-    IfStatement(s) {
+    ConditionalStatement(s) {
       this.analyze(s.test)
       checkBoolean(s.test)
       this.newChildContext().analyze(s.consequent)
-      if (s.alternate.constructor === Array) {
-        // It's a block of statements, make a new context
-        this.newChildContext().analyze(s.alternate)
-      } else if (s.alternate) {
-        // It's a trailing if-statement, so same context
+      if (s.alternate !== null) {
         this.analyze(s.alternate)
       }
-    }
-    ShortIfStatement(s) {
-      this.analyze(s.test)
-      checkBoolean(s.test)
-      this.newChildContext().analyze(s.consequent)
     }
     WhileStatement(s) {
       this.analyze(s.test)
       checkBoolean(s.test)
       this.newChildContext({ inLoop: true }).analyze(s.body)
     }
-    RepeatStatement(s) {
-      this.analyze(s.count)
-      checkInteger(s.count)
-      this.newChildContext({ inLoop: true }).analyze(s.body)
-    }
-    ForRangeStatement(s) {
-      this.analyze(s.low)
-      checkInteger(s.low)
-      this.analyze(s.high)
-      checkInteger(s.high)
-      s.iterator = new Variable(s.iterator.lexeme, true)
-      s.iterator.type = Type.INT
+    IncrementalForStatement(s) {
+      this.analyze(s.test.left)
+      checkBoolean(s.test.left)
+      this.analyze(s.test.right)
+      checkBoolean(s.test.right)
+
+      this.analyze(s.increment)
+      checkNumeric(s.increment)
+
+      this.analyze(s.declaration.initializer)
+      checkNumeric(s.declaration.initializer.type)
+      s.iterator = new Variable(s.declaration.variable.lexeme, s.declaration.initializer.type, s.declaration.readOnly)
       const bodyContext = this.newChildContext({ inLoop: true })
       bodyContext.add(s.iterator.name, s.iterator)
       bodyContext.analyze(s.body)
     }
-    ForStatement(s) {
+    ElementwiseForStatement(s) {
       this.analyze(s.collection)
       checkList(s.collection)
-      s.iterator = new Variable(s.iterator.lexeme, true)
-      s.iterator.type = s.collection.type.baseType
+
+      this.analyze(s.elementId)
+      this.analyze(s.declaration.initializer)
+
+      // TODO: figure out how this is supposed to work
+      s.iterator = new Variable(s.declaration.variable.lexeme, s.declaration.initializer.type, s.declaration.readOnly)
+      s.rawElement = new Variable(s.elementId.lexeme, s.collection.type.baseType, true)
       const bodyContext = this.newChildContext({ inLoop: true })
       bodyContext.add(s.iterator.name, s.iterator)
       bodyContext.analyze(s.body)
@@ -411,29 +421,29 @@ import {
     BinaryExpression(e) {
       this.analyze(e.left)
       this.analyze(e.right)
-      if (["^", "-", "*", "//", "/", "%", "+"].includes(e.op.lexeme)) {
+      if (["^", "-", "*", "/", "//", "%", "+"].includes(e.op.lexeme)) {
         checkNumeric(e.left)
         checkHaveSameType(e.left, e.right)
         e.type = e.left.type
       } else if (["<", "<=", ">", ">="].includes(e.op.lexeme)) {
         checkNumeric(e.left)
         checkHaveSameType(e.left, e.right)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       } else if (["==", "!=", "is"].includes(e.op.lexeme)) {
         checkHaveSameType(e.left, e.right)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       } else if (["or", "and"].includes(e.op.lexeme)) {
         checkBoolean(e.left)
         checkBoolean(e.right)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       } else if (["C=", "C<"].includes(e.op.lexeme)) {
         checkList(e.right)
         checkList(e.left)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       } else if (["in"].includes(e.op.lexeme)) {
         checkList(e.right)
         checkHaveSameType(e.left, e.right.baseType)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       }
     }
     UnaryExpression(e) {
@@ -443,7 +453,7 @@ import {
         e.type = e.operand.type
       } else if (e.op.lexeme === "!") {
         checkBoolean(e.operand)
-        e.type = Type.BOOLEAN
+        e.type = Type.BOOL
       }
     }
     SubscriptExpression(e) {
@@ -467,12 +477,25 @@ import {
       e.field = e.object.type.fields.find(f => f.name.lexeme === e.field.lexeme)
       e.type = e.field.type
     }
-    Call(c) {
+    FunctionCall(c) {
       this.analyze(c.callee)
       const callee = c.callee?.value ?? c.callee
       checkCallable(callee)
       this.analyze(c.args)
-      if (callee.constructor === StructType) {
+      if (callee.constructor === StructType || callee.constructor === ClassType) {
+        checkConstructorArguments(c.args, callee)
+        c.type = callee
+      } else {
+        checkFunctionCallArguments(c.args, callee.type)
+        c.type = callee.type.returnType
+      }
+    }
+    ProcedureCall(c) {
+      this.analyze(c.callee)
+      const callee = c.callee?.value ?? c.callee
+      checkCallable(callee)
+      this.analyze(c.args)
+      if (callee.constructor === StructType || callee.constructor === ClassType) {
         checkConstructorArguments(c.args, callee)
         c.type = callee
       } else {
@@ -486,12 +509,11 @@ import {
         t.value = this.lookup(t.lexeme)
         t.type = t.value.type
       }
-      if (t.category === "Int") [t.value, t.type] = [BigInt(t.lexeme), Type.INT]
-      if (t.category === "Float") [t.value, t.type] = [Number(t.lexeme), Type.FLOAT]
-      if (t.category === "Str") [t.value, t.type] = [t.lexeme, Type.STRING]
-      if (t.category === "Bool") [t.value, t.type] = [t.lexeme === "true", Type.BOOLEAN]
+      if (t.category === "Num") [t.value, t.type] = [Number(t.lexeme), Type.NUM]
+      if (t.category === "String") [t.value, t.type] = [t.lexeme, Type.STRING]
+      if (t.category === "Bool") [t.value, t.type] = [t.lexeme === "true", Type.BOOL]
     }
-    Array(a) {
+    List(a) {
       a.forEach(item => this.analyze(item))
     }
   }
