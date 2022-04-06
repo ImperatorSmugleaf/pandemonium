@@ -3,8 +3,8 @@
  * from Dr. Toal's notes.
  */
 import ast from "./ast.js";
-/* import analyze from "./analyzer.js"
-import optimize from "./optimizer.js"
+import analyze from "./analyzer.js"
+/* import optimize from "./optimizer.js"
 import generate from "./generator.js" */
 
 export default function compile(source, outputType) {
@@ -13,10 +13,10 @@ export default function compile(source, outputType) {
     }
     const program = ast(source);
     if (outputType === "ast") return program;
-    /* const analyzed = analyze(program)
-  if (outputType === "analyzed") return analyzed
-  const optimized = optimize(analyzed)
-  if (outputType === "optimized") return optimized
-  return generate(optimized) */
-    throw new Error("Compilation only supports ast right now");
+    const analyzed = analyze(program)
+    if (outputType === "analyzed") return analyzed
+    /* const optimized = optimize(analyzed)
+    if (outputType === "optimized") return optimized
+    return generate(optimized) */
+    throw new Error("Compilation only supports ast and analyzed right now");
 }
