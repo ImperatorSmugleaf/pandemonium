@@ -268,7 +268,7 @@ import {
       return this[node.constructor.name](node)
     }
     Program(p) {
-      this.analyze(p.statements)
+      this.analyze(p.body)
     }
     VariableDeclaration(d) {
       this.analyze(d.initializer)
