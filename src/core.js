@@ -128,7 +128,7 @@ export class UnaryExpression {
     }
 }
 
-export class ListType {
+export class ListDeclaration {
     constructor(type) {
         Object.assign(this, { type });
     }
@@ -205,7 +205,7 @@ export class Procedure {
     }
 }
 
-export class TypeList extends Type {
+export class ListType extends Type {
     // Type of a list containing any type
     constructor(baseType) {
         super(`[${baseType.description}]`)
@@ -228,7 +228,23 @@ export class ClassType extends Type {
     }
 }
 
+export class FunctionType extends Type {
+    // Generated when processing a function declaration
+    // Maps the parameters' types to the function's return type
+    // Ex. (num, string)->[bool]
+    constructor(paramTypes, returnType) {
+      super(`(${paramTypes.map(t => t.description).join(", ")})->${returnType.description}`)
+      Object.assign(this, { paramTypes, returnType })
+    }
+}
 
+export class ProcedureType extends Type {
+    // Generated when processing a procedure declaration
+    // Ex. (num, [string], bool)
+    constructor(paramTypes) {
+        super(`(${paramTypes.map(t => t.description).join(", ")})`)
+    }
+}
 
 
 //Dr. Toal's error message-er utilizing Ohm's API.
