@@ -35,14 +35,14 @@ const semanticChecks = [
   ["member exp", "struct S {x;} now y:S = S(1);print(y.x);"],
   ["subscript exp", "now a: [int]=[1,2];print(a[0]);"],
   ["array of struct", "struct S{x;} now x:[S]=[S(), S()];"],
-  ["type equivalence of nested arrays", "num f([[int]] x) {yeet 1} print(f([[1],[2]]));"],
+  ["type equivalence of nested arrays", "num f([[int]] x) {yeet 1;} print(f([[1],[2]]));"],
   [
     "function yeet types",
     `num square(x: int) { yeet x * x; }
      bool even(x: int): { yeet x % 2 == 0; }`,
   ],
-  ["struct parameters", "struct S {z;} num f(S x) {yeet 1}"],
-  ["array parameters", "num f([int] x) {yeet 1}"],
+  ["struct parameters", "struct S {z;} num f(S x) {yeet 1;}"],
+  ["array parameters", "num f([int] x) {yeet 1;}"],
   ["outer variable", "set x: int = 1; while(false) {print(x);}"]
 ]
 
