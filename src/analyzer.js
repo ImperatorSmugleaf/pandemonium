@@ -175,7 +175,7 @@ import {
   
   function checkAssignable(e, { toType: type }) {
     check(
-      type === Type.ANY || e.type.isAssignableTo(type),
+      e.type.isAssignableTo(type),
       `Cannot assign a ${e.type.description} to a ${type.description}`
     )
   }
