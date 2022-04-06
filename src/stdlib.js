@@ -6,7 +6,7 @@
  * to their category.
  */
 
-import { Procedure, Type, Variable } from "./core";
+import { Procedure, Type, Variable } from "./core.js";
 
 function builtinFunc(name, returnType) {
     return Object.assign(new Function(name, returnType))
@@ -20,11 +20,11 @@ const listMethods = Object.freeze({
     preadd: builtinProc("preadd"),
     add: builtinProc("add"),
     insertAt: builtinProc("insertAt"),
-    length: builtinFunc("length", num)
+    length: builtinFunc("length", Type.NUM)
 })
 
 const stringMethods = Object.freeze({
-    symbolcount: builtinFunc("symbolcount", num)
+    symbolcount: builtinFunc("symbolcount", Type.NUM)
 })
 
 export const fundamentum = Object.freeze({
