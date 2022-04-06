@@ -34,11 +34,11 @@ num cube(num x) {
 
 const expected = `   1 | Program statements=[#2,#4,#5,#36]
    2 | VariableDeclaration variable=(Id,"oneThroughFive") type=#3 initializer=[(Num,"1"),(Num,"2"),(Num,"3"),(Num,"4"),(Num,"5")] readOnly=true
-   3 | ListType type=(Sym,"num")
+   3 | ListDeclaration type=(Sym,"num")
    4 | VariableDeclaration variable=(Id,"counting") type=(Sym,"bool") initializer=(Bool,"true") readOnly=true
-   5 | ProcedureDeclaration proc=(Id,"main") params=[#6] body=#8
+   5 | ProcedureDeclaration proc=(Id,"main") parameters=[#6] body=#8
    6 | Parameter type=#7 id=(Id,"args")
-   7 | ListType type=(Sym,"string")
+   7 | ListDeclaration type=(Sym,"string")
    8 | Block statements=[#9,#10,#17,#18,#19,#21,#32,#35]
    9 | VariableDeclaration variable=(Id,"count") type=(Sym,"num") initializer=(Num,"0") readOnly=false
   10 | WhileStatement test=(Id,"counting") body=#11
@@ -67,7 +67,7 @@ const expected = `   1 | Program statements=[#2,#4,#5,#36]
   33 | FunctionCall callee=#34 args=[]
   34 | MemberAccess object=(Id,"oneThroughFive") property=(Id,"pop")
   35 | ProcedureCall callee=(Id,"success") args=[]
-  36 | FunctionDeclaration type=(Sym,"num") func=(Id,"cube") params=[#37] body=#38
+  36 | FunctionDeclaration type=(Sym,"num") func=(Id,"cube") parameters=[#37] body=#38
   37 | Parameter type=(Sym,"num") id=(Id,"x")
   38 | Block statements=[#39,#42]
   39 | VariableDeclaration variable=(Id,"triple") type=(Sym,"num") initializer=#40 readOnly=true
