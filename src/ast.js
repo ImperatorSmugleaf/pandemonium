@@ -220,31 +220,31 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     TemplateLiteralStmt_str(_first, _rest) {
-        return new core.Token("String", this.source)
+        return new core.Token("string", this.source)
     },
 
     id(_first, _rest) {
-        return new core.Token("Id", this.source);
+        return new core.Token("id", this.source);
     },
 
     true(_) {
-        return new core.Token("Bool", this.source);
+        return new core.Token("bool", this.source);
     },
 
     false(_) {
-        return new core.Token("Bool", this.source);
+        return new core.Token("bool", this.source);
     },
 
     num(_whole, _point, _fraction, _e, _sign, _exponent) {
-        return new core.Token("Num", this.source);
+        return new core.Token("num", this.source);
     },
 
     str(_start, _str, _end) {
-        return new core.Token("String", this.source);
+        return new core.Token("string", this.source);
     },
 
     _terminal() {
-        return new core.Token("Sym", this.source);
+        return new core.Token("sym", this.source);
     },
 
     _iter(...children) {
