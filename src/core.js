@@ -73,8 +73,8 @@ export class IncrementalForStatement {
 }
 
 export class ElementwiseForStatement {
-    constructor(declaration, elementId, collection, body) {
-        Object.assign(this, { declaration, elementId, collection, body })
+    constructor(productionDec, iterator, source, body) {
+        Object.assign(this, { productionDec, iterator, source, body })
     }
 }
 
