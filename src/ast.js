@@ -103,7 +103,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.UnpackedVariable(variable.ast());
     },
 
-    Variable_list(_open, args, _close) {
+    ListExp(_open, args, _close) {
         return args.asIteration().ast();
     },
 
