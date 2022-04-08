@@ -17,7 +17,7 @@ Pandemonium {
                 | (Variable | this) "." Exp                     -- memberaccess
                 | new id "(" Args ")"                           -- instantiation
                 | "<-" Variable                                 -- unpacking
-                | "[" Args "]"                                  -- list
+                | ListExp
                 | id
     Declaration = Vardec | Subrtdec | StructDec | ClassDec
     Vardec      = now VarDecId ":" Type "=" Exp ";"             -- mutable
@@ -70,9 +70,11 @@ Pandemonium {
                 | str
                 | FuncCall
                 | Variable
+                | ListExp
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
     
+    ListExp     = "[" Args "]"
     FuncCall    = VarName "(" Args ")"
     ProcCall    = VarName "(" Args ")" ";"
     VarName     = VarName1 "." VarName                          -- memberaccess
