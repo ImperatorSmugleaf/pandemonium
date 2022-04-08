@@ -67,7 +67,7 @@ import {
     isEquivalentTo(target) {
       // [T] equivalent to [U] only when T is equivalent to U.
       return (
-        target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
+        target.constructor === ListType && this.baseType.isEquivalentTo(target.baseType)
       )
     },
     isAssignableTo(target) {
@@ -275,8 +275,9 @@ import {
     VariableDeclaration(d) {
       this.analyze(d.initializer)
       this.analyze(d.type)
-      d.id.value = new Variable(d.id.lexeme, d.type.value, d.readOnly)
-      d.id.value.type = d.initializer.type
+      checkHaveSameType(d.type, d.initializer)
+
+      d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly)
       this.add(d.id.lexeme, d.id.value)
     }
     TypeDeclaration(d) {
@@ -392,17 +393,15 @@ import {
       bodyContext.analyze(s.body)
     }
     ElementwiseForStatement(s) {
-      this.analyze(s.collection)
-      checkList(s.collection)
+      this.analyze(s.source)
+      checkList(s.source)
 
-      this.analyze(s.elementId)
-      this.analyze(s.declaration.initializer)
-
-      // TODO: figure out how this is supposed to work
-      s.iterator = new Variable(s.declaration.variable.lexeme, s.declaration.initializer.type, s.declaration.readOnly)
-      s.rawElement = new Variable(s.elementId.lexeme, s.collection.type.baseType, true)
       const bodyContext = this.newChildContext({ inLoop: true })
+      s.iterator = new Variable(s.iterator.lexeme, s.source.type.baseType, true)
       bodyContext.add(s.iterator.name, s.iterator)
+
+      this.analyze(s.productionDec)
+      
       bodyContext.analyze(s.body)
     }
     Conditional(e) {
@@ -500,13 +499,28 @@ import {
     }
     Token(t) {
       // For ids being used, not defined
-      if (t.category === "Id") {
+      if (t.category === "id") {
         t.value = this.lookup(t.lexeme)
         t.type = t.value.type
       }
-      if (t.category === "Num") [t.value, t.type] = [Number(t.lexeme), Type.NUM]
-      if (t.category === "String") [t.value, t.type] = [t.lexeme, Type.STRING]
-      if (t.category === "Bool") [t.value, t.type] = [t.lexeme === "true", Type.BOOL]
+      if (t.category === "num") [t.value, t.type] = [Number(t.lexeme), Type.NUM]
+      if (t.category === "string") [t.value, t.type] = [t.lexeme, Type.STRING]
+      if (t.category === "bool") [t.value, t.type] = [t.lexeme === "true", Type.BOOL]
+      if (t.category === "sym") {
+        switch(t.lexeme) {
+          case "num":
+            t.type = Type.NUM
+            break;
+
+          case "string":
+            t.type = Type.STRING
+            break;
+
+          case "bool":
+            t.type = Type.BOOL
+            break;
+        }
+      }
     }
     List(a) {
       a.forEach(item => this.analyze(item))
