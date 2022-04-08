@@ -273,6 +273,7 @@ import {
       }
     }
     VariableDeclaration(d) {
+      console.log(d.initializer)
       this.analyze(d.initializer)
       this.analyze(d.type)
       checkHaveSameType(d.type, d.initializer)
@@ -294,12 +295,14 @@ import {
     }
     FunctionDeclaration(d) {
       this.analyze(d.type)
+      checkIsAType(d.type.type)
       d.func.value = new Function(
         d.func.lexeme,
-        d.type
+        d.type.type
       )
       d.func.value.parameters = d.parameters
       checkIsAType(d.func.value.returnType)
+      checkHaveSameType(d.type, d.func.value.returnType)
       // When entering a function body, we must reset the inLoop setting,
       // because it is possible to declare a function inside a loop!
       const childContext = this.newChildContext({ inLoop: false, subroutine: d.func.value })
@@ -519,6 +522,12 @@ import {
           case "bool":
             t.type = Type.BOOL
             break;
+
+          default:
+            const inner = t.lexeme.slice(1, t.lexeme.length - 1)
+            t.type = new ListType({description: inner})
+            t.value = t.lexeme
+            this.analyze({category: "sym", lexeme: inner})
         }
       }
     }
