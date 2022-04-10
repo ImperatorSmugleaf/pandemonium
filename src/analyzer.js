@@ -41,6 +41,7 @@ import {
     Token,
     error,
     ProcedureType,
+    List,
 } from "./core.js";
 import * as stdlib from "./stdlib.js";
 
@@ -304,7 +305,15 @@ class Context {
     VariableDeclaration(d) {
         this.analyze(d.initializer);
         this.analyze(d.type);
-        checkHaveSameType(d.type, d.initializer);
+        if (
+            d.initializer instanceof List &&
+            d.initializer.elements.length === 0
+        ) {
+            checkList(d.type);
+            d.initializer.type = d.type;
+        } else {
+            checkHaveSameType(d.type, d.initializer);
+        }
 
         d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly);
         this.add(d.id.lexeme, d.id.value);
@@ -510,9 +519,13 @@ class Context {
         a.type = new ArrayType(a.elements[0].type);
     }
     List(l) {
-        l.elements.forEach((element) => this.analyze(element));
-        checkAllHaveSameType(l.elements);
-        l.type = new ListType(l.elements[0].type);
+        if (l.elements.length > 0) {
+            l.elements.forEach((element) => this.analyze(element));
+            checkAllHaveSameType(l.elements);
+            l.type = new ListType(l.elements[0].type);
+        } else {
+            l.type = null;
+        }
     }
     EmptyArray(e) {
         this.analyze(e.baseType);
