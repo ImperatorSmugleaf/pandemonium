@@ -69,8 +69,8 @@ Pandemonium {
                 | TemplateLiteral
                 | str
                 | FuncCall
-                | Variable
                 | ListExp
+                | Variable
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
     
