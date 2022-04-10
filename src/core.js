@@ -49,14 +49,14 @@ export class Increment {
 }
 
 export class ConditionalStatement {
-    constructor(test, consequent, alternate=null) {
-        Object.assign(this, { test, consequent, alternate })
+    constructor(test, consequent, alternate = null) {
+        Object.assign(this, { test, consequent, alternate });
     }
 }
 
 export class ElseStatement {
     constructor(body) {
-        Object.assign(this, { body })
+        Object.assign(this, { body });
     }
 }
 
@@ -67,14 +67,14 @@ export class WhileStatement {
 }
 
 export class IncrementalForStatement {
-    constructor(declaration, test, increment, body){
-        Object.assign(this, { declaration, test, increment, body })
+    constructor(declaration, test, increment, body) {
+        Object.assign(this, { declaration, test, increment, body });
     }
 }
 
 export class ElementwiseForStatement {
     constructor(productionDec, iterator, source, body) {
-        Object.assign(this, { productionDec, iterator, source, body })
+        Object.assign(this, { productionDec, iterator, source, body });
     }
 }
 
@@ -112,7 +112,7 @@ export class ProcedureCall {
 
 export class LambdaExpression {
     constructor(params, body, captures = null) {
-        Object.assign(this, { params, body, captures })
+        Object.assign(this, { params, body, captures });
     }
 }
 
@@ -134,27 +134,33 @@ export class ListDeclaration {
     }
 }
 
+export class List {
+    constructor(elements) {
+        Object.assign(this, { elements });
+    }
+}
+
 export class UnpackedVariable {
     constructor(variable) {
-        Object.assign(this, { variable })
+        Object.assign(this, { variable });
     }
 }
 
 export class ObjectInstantiation {
     constructor(objType, args) {
-        Object.assign(this, { objType, args })
+        Object.assign(this, { objType, args });
     }
 }
 
 export class TemplateLiteral {
     constructor(body) {
-        Object.assign(this, { body })
+        Object.assign(this, { body });
     }
 }
 
 export class ObjectFieldDeclaration {
     constructor(id) {
-        Object.assign(this, { type, id })
+        Object.assign(this, { type, id });
     }
 }
 
@@ -173,58 +179,57 @@ export class Parameter {
     }
 }
 
-
 // ------ ANALYZER CLASSES ------
 export class Variable {
     constructor(name, type, readOnly) {
-        Object.assign(this, { name, type, readOnly })
+        Object.assign(this, { name, type, readOnly });
     }
 }
 
 export class Type {
     // Type of all basic types
-    static BOOL = new Type("bool")
-    static NUM = new Type("num")
-    static STRING = new Type("string")
+    static BOOL = new Type("bool");
+    static NUM = new Type("num");
+    static STRING = new Type("string");
     constructor(description) {
-        Object.assign(this, { description })
+        Object.assign(this, { description });
     }
 }
 
 export class Function {
     // Generated when processing a function declaration
     constructor(name, returnType) {
-        Object.assign(this, { name, returnType })
+        Object.assign(this, { name, returnType });
     }
 }
 
 export class Procedure {
     // Generated when processing a procedure declaration
     constructor(name) {
-        Object.assign(this, { name })
+        Object.assign(this, { name });
     }
 }
 
 export class ListType extends Type {
     // Type of a list containing any type
     constructor(baseType) {
-        super(`[${baseType.description}]`)
-        this.baseType = baseType
+        super(`[${baseType.description}]`);
+        this.baseType = baseType;
     }
 }
 
 export class StructType {
     // Generated when processing a struct declaration
     constructor(name, fields) {
-        Object.assign(this, { name, fields })
+        Object.assign(this, { name, fields });
     }
 }
 
 export class ClassType extends Type {
     // Generated when processing a class declaration
     constructor(name, fields) {
-        super(name.lexeme)
-        Object.assign(this, { fields })
+        super(name.lexeme);
+        Object.assign(this, { fields });
     }
 }
 
@@ -233,8 +238,12 @@ export class FunctionType extends Type {
     // Maps the parameters' types to the function's return type
     // Ex. (num, string)->[bool]
     constructor(paramTypes, returnType) {
-      super(`(${paramTypes.map(t => t.description).join(", ")})->${returnType.description}`)
-      Object.assign(this, { paramTypes, returnType })
+        super(
+            `(${paramTypes.map((t) => t.description).join(", ")})->${
+                returnType.description
+            }`
+        );
+        Object.assign(this, { paramTypes, returnType });
     }
 }
 
@@ -242,10 +251,9 @@ export class ProcedureType extends Type {
     // Generated when processing a procedure declaration
     // Ex. (num, [string], bool)
     constructor(paramTypes) {
-        super(`(${paramTypes.map(t => t.description).join(", ")})`)
+        super(`(${paramTypes.map((t) => t.description).join(", ")})`);
     }
 }
-
 
 //Dr. Toal's error message-er utilizing Ohm's API.
 /* c8 ignore next 47 */
@@ -286,7 +294,9 @@ Program.prototype[util.inspect.custom] = function () {
             if (Array.isArray(e)) return `[${e.map(view)}]`;
             return util.inspect(e);
         }
-        for (let [node, id] of [...tags.entries()].sort((a, b) => a[1] - b[1])) {
+        for (let [node, id] of [...tags.entries()].sort(
+            (a, b) => a[1] - b[1]
+        )) {
             let type = node.constructor.name;
             let props = Object.entries(node).map(([k, v]) => `${k}=${view(v)}`);
             yield `${String(id).padStart(4, " ")} | ${type} ${props.join(" ")}`;
