@@ -23,7 +23,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Statement_print(_print, _open, argument, _close, _semicolon) {
-        return new core.PrintStatement(argument.asIteration().ast());
+        return new core.PrintStatement(argument.ast());
     },
 
     Statement_while(_while, _open, test, _close, body) {
