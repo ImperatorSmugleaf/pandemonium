@@ -39,11 +39,21 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Vardec_mutable(_now, id, _intro, type, _eq, expression, _semicolon) {
-        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), false);
+        return new core.VariableDeclaration(
+            id.ast(),
+            type.ast(),
+            expression.ast(),
+            false
+        );
     },
 
     Vardec_immutable(_set, id, _intro, type, _eq, expression, _semicolon) {
-        return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), true);
+        return new core.VariableDeclaration(
+            id.ast(),
+            type.ast(),
+            expression.ast(),
+            true
+        );
     },
 
     InstanceField(id, _semi) {
@@ -68,11 +78,19 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Increment_prefix(_inc, variable) {
-        return new core.Increment(variable.ast());
+        return new core.Increment(variable.ast(), true);
     },
 
     Increment_postfix(variable, _inc) {
-        return new core.Increment(variable.ast());
+        return new core.Increment(variable.ast(), false);
+    },
+
+    Decrement_prefix(_inc, variable) {
+        return new core.Decrement(variable.ast(), true);
+    },
+
+    Decrement_postfix(variable, _inc) {
+        return new core.Decrement(variable.ast(), false);
     },
 
     Assignment_base(target, operator, source) {
@@ -96,7 +114,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Variable_instantiation(_new, objType, _open, args, _close) {
-        return new core.ObjectInstantiation(objType.ast(), args.ast())
+        return new core.ObjectInstantiation(objType.ast(), args.ast());
     },
 
     Variable_unpacking(_unpack, variable) {
@@ -104,47 +122,83 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     ListExp(_open, args, _close) {
-        return args.asIteration().ast();
+        return new core.List(args.asIteration().ast());
     },
 
-    ForLoop_elementwise(_for, _open, declaration, elementId, _in, collection, _close, body) {
-        return new core.ElementwiseForStatement(declaration.ast(), elementId.ast(), collection.ast(), body.ast());
+    ForLoop_elementwise(
+        _for,
+        _open,
+        declaration,
+        elementId,
+        _in,
+        collection,
+        _close,
+        body
+    ) {
+        return new core.ElementwiseForStatement(
+            declaration.ast(),
+            elementId.ast(),
+            collection.ast(),
+            body.ast()
+        );
     },
 
-    ForLoop_incremental(_for, _open, declaration, test, _semi, increment, _close, body) {
-        return new core.IncrementalForStatement(declaration.ast(), test.ast(), increment.ast(), body.ast())
+    ForLoop_incremental(
+        _for,
+        _open,
+        declaration,
+        test,
+        _semi,
+        increment,
+        _close,
+        body
+    ) {
+        return new core.IncrementalForStatement(
+            declaration.ast(),
+            test.ast(),
+            increment.ast(),
+            body.ast()
+        );
     },
 
     IfThen_simple(_if, _open, test, _close, body) {
-        return new core.ConditionalStatement(test.ast(), body.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast());
     },
 
     IfThen_complex(_if, _open, test, _close, body, nextStatement) {
-        return new core.ConditionalStatement(test.ast(), body.ast(), nextStatement.ast())
+        return new core.ConditionalStatement(
+            test.ast(),
+            body.ast(),
+            nextStatement.ast()
+        );
     },
 
     ElseIf_simple(_elif, _open, test, _close, body) {
-        return new core.ConditionalStatement(test.ast(), body.ast())
+        return new core.ConditionalStatement(test.ast(), body.ast());
     },
 
     ElseIf_complex(_elif, _open, test, _close, body, nextStatement) {
-        return new core.ConditionalStatement(test.ast(), body.ast(), nextStatement.ast())
+        return new core.ConditionalStatement(
+            test.ast(),
+            body.ast(),
+            nextStatement.ast()
+        );
     },
 
     ThenElse(_else, body) {
-        return new core.ElseStatement(body.ast())
+        return new core.ElseStatement(body.ast());
     },
 
     VarName_memberaccess(source, _dot, member) {
         return new core.MemberAccess(source.ast(), member.ast());
     },
 
-    VarName1_listaccess(source, _open, member, _close){
+    VarName1_listaccess(source, _open, member, _close) {
         return new core.MemberAccess(source.ast(), member.ast());
     },
 
     VarDecId_instance(source, _dot, member) {
-        return new core.MemberAccess(source.ast(), member.ast())
+        return new core.MemberAccess(source.ast(), member.ast());
     },
 
     Exp_binary(left, op, right) {
@@ -196,11 +250,24 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Lambda_base(_open, params, _close, _arrow, body) {
-        return new core.LambdaExpression(params.ast(), body.ast())
+        return new core.LambdaExpression(params.ast(), body.ast());
     },
 
-    Lambda_capturing(_open, params, _close, _capstart, captures, _capend, _arrow, body) {
-        return new core.LambdaExpression(params.ast(), body.ast(), captures.ast())
+    Lambda_capturing(
+        _open,
+        params,
+        _close,
+        _capstart,
+        captures,
+        _capend,
+        _arrow,
+        body
+    ) {
+        return new core.LambdaExpression(
+            params.ast(),
+            body.ast(),
+            captures.ast()
+        );
     },
 
     Param(type, id) {
@@ -212,15 +279,15 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     TemplateLiteral(_begin, body, _end) {
-        return body.asIteration().ast()
+        return body.asIteration().ast();
     },
 
     TemplateLiteralStmt_expression(_open, exp, _close) {
-        return exp.ast()
+        return exp.ast();
     },
 
     TemplateLiteralStmt_str(_first, _rest) {
-        return new core.Token("string", this.source)
+        return new core.Token("string", this.source);
     },
 
     id(_first, _rest) {
