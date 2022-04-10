@@ -24,12 +24,15 @@ Pandemonium {
                 | set VarDecId ":" Type "=" Exp ";"	            -- immutable
     Subrtdec    = Type id "(" Params ")" Block                  -- function
                 | proc id "(" Params ")" Block                  -- procedure
-    Assignment  = Increment                                     
+    Assignment  = Increment
+                | Decrement                                     
                 | Variable "=" Exp                              -- base
                 | Variable "+=" Exp                             -- add
                 | Variable "-=" Exp                             -- sub
-    Increment   = ("++" | "--" ) Variable                       -- prefix
-                | Variable ("++" | "--")                        -- postfix
+    Increment   = "++" Variable                                 -- prefix
+                | Variable "++"                                 -- postfix
+    Decrement   = "--" Variable                                 -- prefix
+                | Variable "--"                                 -- postfix
     ForLoop     = for "(" Vardec id in Variable ")" Block       -- elementwise
                 | for "(" Vardec Exp ";" Exp ")" Block          -- incremental
     IfThen      = if "(" Exp ")" Block ElseIf                   -- complex
