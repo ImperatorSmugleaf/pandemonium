@@ -43,8 +43,14 @@ export class Assignment {
 }
 
 export class Increment {
-    constructor(variable) {
-        Object.assign(this, { variable });
+    constructor(variable, prefix) {
+        Object.assign(this, { variable, prefix });
+    }
+}
+
+export class Decrement {
+    constructor(variable, prefix) {
+        Object.assign(this, { variable, prefix });
     }
 }
 
