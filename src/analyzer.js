@@ -219,7 +219,7 @@ function checkInLoop(context) {
 }
 
 function checkInFunction(context) {
-    check(context.function, "Return can only appear in a function");
+    check(context.inFunction, "Yeet can only appear in a function");
 }
 
 function checkCallable(e) {
@@ -264,9 +264,16 @@ class Context {
         parent = null,
         locals = new Map(),
         inLoop = false,
+        inFunction = false,
         subroutine: f = null,
     }) {
-        Object.assign(this, { parent, locals, inLoop, subroutine: f });
+        Object.assign(this, {
+            parent,
+            locals,
+            inLoop,
+            inFunction,
+            subroutine: f,
+        });
     }
     sees(name) {
         // Search "outward" through enclosing scopes
@@ -299,6 +306,11 @@ class Context {
     }
     Program(p) {
         for (let statement of p.statements) {
+            this.analyze(statement);
+        }
+    }
+    Block(b) {
+        for (let statement of b.statements) {
             this.analyze(statement);
         }
     }
@@ -335,12 +347,11 @@ class Context {
         checkIsAType(d.type.type);
         d.func.value = new Function(d.func.lexeme, d.type.type);
         d.func.value.parameters = d.parameters;
-        checkIsAType(d.func.value.returnType);
-        checkHaveSameType(d.type, d.func.value.returnType);
         // When entering a function body, we must reset the inLoop setting,
         // because it is possible to declare a function inside a loop!
         const childContext = this.newChildContext({
             inLoop: false,
+            inFunction: true,
             subroutine: d.func.value,
         });
         childContext.analyze(d.func.value.parameters);
@@ -407,10 +418,10 @@ class Context {
     BreakStatement(s) {
         checkInLoop(this);
     }
-    ReturnStatement(s) {
+    YeetStatement(s) {
         checkInFunction(this);
-        this.analyze(s.expression);
-        checkReturnable({ expression: s.expression, from: this.subroutine });
+        this.analyze(s.argument);
+        checkReturnable({ expression: s.argument, from: this.subroutine });
     }
     ConditionalStatement(s) {
         this.analyze(s.test);
@@ -460,6 +471,9 @@ class Context {
         this.analyze(s.productionDec);
 
         bodyContext.analyze(s.body);
+    }
+    PrintStatement(s) {
+        this.analyze(s.argument);
     }
     Conditional(e) {
         this.analyze(e.test);
