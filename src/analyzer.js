@@ -41,17 +41,17 @@ import {
     Token,
     error,
     ProcedureType,
-  } from "./core.js"
-  import * as stdlib from "./stdlib.js"
-  
-  /**********************************************
-   *  TYPE EQUIVALENCE AND COMPATIBILITY RULES  *
-   *********************************************/
-  
-  Object.assign(Type.prototype, {
+} from "./core.js";
+import * as stdlib from "./stdlib.js";
+
+/**********************************************
+ *  TYPE EQUIVALENCE AND COMPATIBILITY RULES  *
+ *********************************************/
+
+Object.assign(Type.prototype, {
     // Equivalence: when are two types the same
     isEquivalentTo(target) {
-      return this == target
+        return this == target;
     },
     // T1 assignable to T2 is when x:T1 can be assigned to y:T2. By default
     // this is only when two types are equivalent; however, for other kinds
@@ -59,488 +59,547 @@ import {
     // supertypes and subtypes, an object of a subtype would be assignable
     // to a variable constrained to a supertype.
     isAssignableTo(target) {
-      return this.isEquivalentTo(target)
+        return this.isEquivalentTo(target);
     },
-  })
-  
-  Object.assign(ListType.prototype, {
+});
+
+Object.assign(ListType.prototype, {
     isEquivalentTo(target) {
-      // [T] equivalent to [U] only when T is equivalent to U.
-      return (
-        target.constructor === ListType && this.baseType.isEquivalentTo(target.baseType)
-      )
+        // [T] equivalent to [U] only when T is equivalent to U.
+        return (
+            target.constructor === ListType &&
+            this.baseType.isEquivalentTo(target.baseType)
+        );
     },
     isAssignableTo(target) {
-      // Arrays are invariant in pantheon
-      return this.isEquivalentTo(target)
+        // Arrays are invariant in pantheon
+        return this.isEquivalentTo(target);
     },
-  })
+});
 
-  Object.assign(StructType.prototype, {
+Object.assign(StructType.prototype, {
     isEquivalentTo(target) {
-      // T is equivalent to U only when all of T's fields & U's fields are equal.
-      return(
-        target.constructor === StructType &&
-        this.fields === target.fields &&
-        this.fields.forEach(field => target.fields.some(element => field.isEquivalentTo(element)))
-      )
+        // T is equivalent to U only when all of T's fields & U's fields are equal.
+        return (
+            target.constructor === StructType &&
+            this.fields === target.fields &&
+            this.fields.forEach((field) =>
+                target.fields.some((element) => field.isEquivalentTo(element))
+            )
+        );
     },
 
     isAssignableTo(target) {
-      return(
-        target.constructor === StructType && this.name.isEquivalentTo(target.name)
-      )
-    }
-  })
+        return (
+            target.constructor === StructType &&
+            this.name.isEquivalentTo(target.name)
+        );
+    },
+});
 
-  Object.assign(ClassType.prototype, {
+Object.assign(ClassType.prototype, {
     // T is equivalent to U if T and U have the same reference.
-    
+
     isAssignableTo(target) {
-      return(
-        target.constructor === ClassType && this.name.isEquivalentTo(target.name)
-      )
-    }
-  })
-  
-  Object.assign(FunctionType.prototype, {
+        return (
+            target.constructor === ClassType &&
+            this.name.isEquivalentTo(target.name)
+        );
+    },
+});
+
+Object.assign(FunctionType.prototype, {
     isEquivalentTo(target) {
-      return (
-        target.constructor === FunctionType &&
-        this.returnType.isEquivalentTo(target.returnType) &&
-        this.paramTypes.length === target.paramTypes.length &&
-        this.paramTypes.every((t, i) => target.paramTypes[i].isEquivalentTo(t))
-      )
+        return (
+            target.constructor === FunctionType &&
+            this.returnType.isEquivalentTo(target.returnType) &&
+            this.paramTypes.length === target.paramTypes.length &&
+            this.paramTypes.every((t, i) =>
+                target.paramTypes[i].isEquivalentTo(t)
+            )
+        );
     },
     isAssignableTo(target) {
-      // Functions are covariant on return types, contravariant on parameters.
-      return (
-        target.constructor === FunctionType &&
-        this.returnType.isAssignableTo(target.returnType) &&
-        this.paramTypes.length === target.paramTypes.length &&
-        this.paramTypes.every((t, i) => target.paramTypes[i].isAssignableTo(t))
-      )
+        // Functions are covariant on return types, contravariant on parameters.
+        return (
+            target.constructor === FunctionType &&
+            this.returnType.isAssignableTo(target.returnType) &&
+            this.paramTypes.length === target.paramTypes.length &&
+            this.paramTypes.every((t, i) =>
+                target.paramTypes[i].isAssignableTo(t)
+            )
+        );
     },
-  })
-  
-  /**************************
-   *  VALIDATION FUNCTIONS  *
-   *************************/
-  
-  function check(condition, message, entity) {
-    if (!condition) error(message, entity)
-  }
-  
-  function checkType(e, types, expectation) {
-    check(types.includes(e.type), `Expected ${expectation}`)
-  }
-  
-  function checkNumeric(e) {
-    checkType(e, [Type.NUM], "a number")
-  }
-  
-  function checkNumericOrString(e) {
-    checkType(e, [Type.NUM, Type.STRING], "a number or string")
-  }
-  
-  function checkBoolean(e) {
-    checkType(e, [Type.BOOL], "a boolean")
-  }
-  
-  function checkIsAType(e) {
-    check(e instanceof Type, "Type expected", e)
-  }
-  
-  function checkList(e) {
-    check(e.type.constructor === ListType, "List expected", e)
-  }
-  
-  function checkHaveSameType(e1, e2) {
-    check(e1.type.isEquivalentTo(e2.type), "Operands do not have the same type")
-  }
-  
-  function checkAllHaveSameType(expressions) {
+});
+
+/**************************
+ *  VALIDATION FUNCTIONS  *
+ *************************/
+
+function check(condition, message, entity) {
+    if (!condition) error(message, entity);
+}
+
+function checkType(e, types, expectation) {
+    check(types.includes(e.type), `Expected ${expectation}`);
+}
+
+function checkNumeric(e) {
+    checkType(e, [Type.NUM], "a number");
+}
+
+function checkNumericOrString(e) {
+    checkType(e, [Type.NUM, Type.STRING], "a number or string");
+}
+
+function checkBoolean(e) {
+    checkType(e, [Type.BOOL], "a boolean");
+}
+
+function checkIsAType(e) {
+    check(e instanceof Type, "Type expected", e);
+}
+
+function checkList(e) {
+    check(e.type.constructor === ListType, "List expected", e);
+}
+
+function checkHaveSameType(e1, e2) {
     check(
-      expressions.slice(1).every(e => e.type.isEquivalentTo(expressions[0].type)),
-      "Not all elements have the same type"
-    )
-  }
-  
-  function checkNotRecursive(object) {
+        e1.type.isEquivalentTo(e2.type),
+        "Operands do not have the same type"
+    );
+}
+
+function checkAllHaveSameType(expressions) {
     check(
-      !object.fields.map(f => f.type).includes(object),
-      "Struct and class types must not be recursive"
-    )
-  }
-  
-  function checkAssignable(e, { toType: type }) {
+        expressions
+            .slice(1)
+            .every((e) => e.type.isEquivalentTo(expressions[0].type)),
+        "Not all elements have the same type"
+    );
+}
+
+function checkNotRecursive(object) {
     check(
-      e.type.isAssignableTo(type),
-      `Cannot assign a ${e.type.description} to a ${type.description}`
-    )
-  }
-  
-  function checkNotReadOnly(e) {
-    const readOnly = e instanceof Token ? e.value.readOnly : e.readOnly
-    check(!readOnly, `Cannot assign to constant ${e?.lexeme ?? e.name}`, e)
-  }
-  
-  function checkFieldsAllDistinct(fields) {
+        !object.fields.map((f) => f.type).includes(object),
+        "Struct and class types must not be recursive"
+    );
+}
+
+function checkAssignable(e, { toType: type }) {
     check(
-      new Set(fields.map(f => f.name.lexeme)).size === fields.length,
-      "Fields must be distinct"
-    )
-  }
-  
-  function checkMemberDeclared(field, { in: struct }) {
-    check(struct.type.fields.map(f => f.name.lexeme).includes(field), "No such field")
-  }
-  
-  function checkInLoop(context) {
-    check(context.inLoop, "Break can only appear in a loop")
-  }
-  
-  function checkInFunction(context) {
-    check(context.function, "Return can only appear in a function")
-  }
-  
-  function checkCallable(e) {
+        e.type.isAssignableTo(type),
+        `Cannot assign a ${e.type.description} to a ${type.description}`
+    );
+}
+
+function checkNotReadOnly(e) {
+    const readOnly = e instanceof Token ? e.value.readOnly : e.readOnly;
+    check(!readOnly, `Cannot assign to constant ${e?.lexeme ?? e.name}`, e);
+}
+
+function checkFieldsAllDistinct(fields) {
     check(
-      e.constructor === StructType || 
-      e.constructor === ClassType ||
-      e.type.constructor == ProcedureType ||
-      e.type.constructor == FunctionType,
-      "Call of non-function or non-constructor"
-    )
-  }
-  
-  function checkReturnable({ expression: e, from: f }) {
-    checkAssignable(e, { toType: f.type.returnType })
-  }
-  
-  function checkArgumentsMatch(args, targetTypes) {
+        new Set(fields.map((f) => f.name.lexeme)).size === fields.length,
+        "Fields must be distinct"
+    );
+}
+
+function checkMemberDeclared(field, { in: struct }) {
     check(
-      targetTypes.length === args.length,
-      `${targetTypes.length} argument(s) required but ${args.length} passed`
-    )
-    targetTypes.forEach((type, i) => checkAssignable(args[i], { toType: type }))
-  }
-  
-  function checkFunctionCallArguments(args, calleeType) {
-    checkArgumentsMatch(args, calleeType.paramTypes)
-  }
-  
-  function checkConstructorArguments(args, structType) {
-    const fieldTypes = structType.fields.map(f => f.type)
-    checkArgumentsMatch(args, fieldTypes)
-  }
-  
-  /***************************************
-   *  ANALYSIS TAKES PLACE IN A CONTEXT  *
-   **************************************/
-  
-  class Context {
-    constructor({ parent = null, locals = new Map(), inLoop = false, subroutine: f = null }) {
-      Object.assign(this, { parent, locals, inLoop, subroutine: f })
+        struct.type.fields.map((f) => f.name.lexeme).includes(field),
+        "No such field"
+    );
+}
+
+function checkInLoop(context) {
+    check(context.inLoop, "Break can only appear in a loop");
+}
+
+function checkInFunction(context) {
+    check(context.function, "Return can only appear in a function");
+}
+
+function checkCallable(e) {
+    check(
+        e.constructor === StructType ||
+            e.constructor === ClassType ||
+            e.type.constructor == ProcedureType ||
+            e.type.constructor == FunctionType,
+        "Call of non-function or non-constructor"
+    );
+}
+
+function checkReturnable({ expression: e, from: f }) {
+    checkAssignable(e, { toType: f.type.returnType });
+}
+
+function checkArgumentsMatch(args, targetTypes) {
+    check(
+        targetTypes.length === args.length,
+        `${targetTypes.length} argument(s) required but ${args.length} passed`
+    );
+    targetTypes.forEach((type, i) =>
+        checkAssignable(args[i], { toType: type })
+    );
+}
+
+function checkFunctionCallArguments(args, calleeType) {
+    checkArgumentsMatch(args, calleeType.paramTypes);
+}
+
+function checkConstructorArguments(args, structType) {
+    const fieldTypes = structType.fields.map((f) => f.type);
+    checkArgumentsMatch(args, fieldTypes);
+}
+
+/***************************************
+ *  ANALYSIS TAKES PLACE IN A CONTEXT  *
+ **************************************/
+
+class Context {
+    constructor({
+        parent = null,
+        locals = new Map(),
+        inLoop = false,
+        subroutine: f = null,
+    }) {
+        Object.assign(this, { parent, locals, inLoop, subroutine: f });
     }
     sees(name) {
-      // Search "outward" through enclosing scopes
-      return this.locals.has(name) || this.parent?.sees(name)
+        // Search "outward" through enclosing scopes
+        return this.locals.has(name) || this.parent?.sees(name);
     }
     add(name, entity) {
-      // Pandemonium does not allow shadowing.
-      if (this.sees(name)) error(`Identifier ${name} already declared`)
-      this.locals.set(name, entity)
+        // Pandemonium does not allow shadowing.
+        if (this.sees(name)) error(`Identifier ${name} already declared`);
+        this.locals.set(name, entity);
     }
     lookup(name) {
-      const entity = this.locals.get(name)
-      if (entity) {
-        return entity
-      } else if (this.parent) {
-        return this.parent.lookup(name)
-      }
-      error(`Identifier ${name} not declared`)
+        const entity = this.locals.get(name);
+        if (entity) {
+            return entity;
+        } else if (this.parent) {
+            return this.parent.lookup(name);
+        }
+        error(`Identifier ${name} not declared`);
     }
     newChildContext(props) {
-      return new Context({ ...this, parent: this, locals: new Map(), ...props })
+        return new Context({
+            ...this,
+            parent: this,
+            locals: new Map(),
+            ...props,
+        });
     }
     analyze(node) {
-      return this[node.constructor.name](node)
+        return this[node.constructor.name](node);
     }
     Program(p) {
-      for(let statement of p.statements){
-        this.analyze(statement)
-      }
+        for (let statement of p.statements) {
+            this.analyze(statement);
+        }
     }
     VariableDeclaration(d) {
-      console.log(d.initializer)
-      this.analyze(d.initializer)
-      this.analyze(d.type)
-      checkHaveSameType(d.type, d.initializer)
+        this.analyze(d.initializer);
+        this.analyze(d.type);
+        checkHaveSameType(d.type, d.initializer);
 
-      d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly)
-      this.add(d.id.lexeme, d.id.value)
+        d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly);
+        this.add(d.id.lexeme, d.id.value);
     }
     TypeDeclaration(d) {
-      // Add early to allow recursion
-      this.add(d.type.description, d.type)
-      this.analyze(d.type.fields)
-      checkFieldsAllDistinct(d.type.fields)
-      checkNotRecursive(d.type)
+        // Add early to allow recursion
+        this.add(d.type.description, d.type);
+        this.analyze(d.type.fields);
+        checkFieldsAllDistinct(d.type.fields);
+        checkNotRecursive(d.type);
     }
     Field(f) {
-      this.analyze(f.type)
-      if (f.type instanceof Token) f.type = f.type.value
-      checkIsAType(f.type)
+        this.analyze(f.type);
+        if (f.type instanceof Token) f.type = f.type.value;
+        checkIsAType(f.type);
     }
     FunctionDeclaration(d) {
-      this.analyze(d.type)
-      checkIsAType(d.type.type)
-      d.func.value = new Function(
-        d.func.lexeme,
-        d.type.type
-      )
-      d.func.value.parameters = d.parameters
-      checkIsAType(d.func.value.returnType)
-      checkHaveSameType(d.type, d.func.value.returnType)
-      // When entering a function body, we must reset the inLoop setting,
-      // because it is possible to declare a function inside a loop!
-      const childContext = this.newChildContext({ inLoop: false, subroutine: d.func.value })
-      childContext.analyze(d.func.value.parameters)
-      d.func.value.type = new FunctionType(
-        d.func.value.parameters.map(p => p.type),
-        d.func.value.returnType
-      )
-      // Add before analyzing the body to allow recursion
-      this.add(d.func.lexeme, d.func.value)
-      childContext.analyze(d.body)
+        this.analyze(d.type);
+        checkIsAType(d.type.type);
+        d.func.value = new Function(d.func.lexeme, d.type.type);
+        d.func.value.parameters = d.parameters;
+        checkIsAType(d.func.value.returnType);
+        checkHaveSameType(d.type, d.func.value.returnType);
+        // When entering a function body, we must reset the inLoop setting,
+        // because it is possible to declare a function inside a loop!
+        const childContext = this.newChildContext({
+            inLoop: false,
+            subroutine: d.func.value,
+        });
+        childContext.analyze(d.func.value.parameters);
+        d.func.value.type = new FunctionType(
+            d.func.value.parameters.map((p) => p.type),
+            d.func.value.returnType
+        );
+        // Add before analyzing the body to allow recursion
+        this.add(d.func.lexeme, d.func.value);
+        childContext.analyze(d.body);
     }
     ProcedureDeclaration(d) {
-      d.proc.value = new Procedure(
-        d.proc.lexeme
-      )
-      d.proc.value.parameters = d.parameters
-      const childContext = this.newChildContext({ inLoop: false, subroutine: d.proc.value })
-      childContext.analyze(d.proc.value.parameters)
-      d.proc.value.type = new ProcedureType(
-        d.proc.value.parameters.map(p => p.type)
-      )
-      this.add(d.proc.lexeme, d.proc.value)
-      childContext.analyze(d.body)
+        d.proc.value = new Procedure(d.proc.lexeme);
+        d.proc.value.parameters = d.parameters;
+        const childContext = this.newChildContext({
+            inLoop: false,
+            subroutine: d.proc.value,
+        });
+        childContext.analyze(d.proc.value.parameters);
+        d.proc.value.type = new ProcedureType(
+            d.proc.value.parameters.map((p) => p.type)
+        );
+        this.add(d.proc.lexeme, d.proc.value);
+        childContext.analyze(d.body);
+    }
+    ListDeclaration(l) {
+        this.analyze(l.type);
+        l.type = new ListType(l.type.type);
     }
     Parameter(p) {
-      this.analyze(p.type)
-      if (p.type instanceof Token) p.type = p.type.value
-      checkIsAType(p.type)
-      this.add(p.name.lexeme, p)
+        this.analyze(p.type);
+        if (p.type instanceof Token) p.type = p.type.value;
+        checkIsAType(p.type);
+        this.add(p.name.lexeme, p);
     }
     ListType(t) {
-      this.analyze(t.baseType)
-      if (t.baseType instanceof Token) t.baseType = t.baseType.value
+        this.analyze(t.baseType);
+        if (t.baseType instanceof Token) t.baseType = t.baseType.value;
     }
     FunctionType(t) {
-      this.analyze(t.paramTypes)
-      t.paramTypes = t.paramTypes.map(p => (p instanceof Token ? p.value : p))
-      this.analyze(t.returnType)
-      if (t.returnType instanceof Token) t.returnType = t.returnType.value
+        this.analyze(t.paramTypes);
+        t.paramTypes = t.paramTypes.map((p) =>
+            p instanceof Token ? p.value : p
+        );
+        this.analyze(t.returnType);
+        if (t.returnType instanceof Token) t.returnType = t.returnType.value;
     }
     Increment(s) {
-      this.analyze(s.variable)
-      checkNumeric(s.variable)
+        this.analyze(s.variable);
+        checkNumeric(s.variable);
     }
     Decrement(s) {
-      this.analyze(s.variable)
-      checkNumeric(s.variable)
+        this.analyze(s.variable);
+        checkNumeric(s.variable);
     }
     Assignment(s) {
-      this.analyze(s.source)
-      this.analyze(s.target)
-      checkAssignable(s.source, { toType: s.target.type })
-      checkNotReadOnly(s.target)
+        this.analyze(s.source);
+        this.analyze(s.target);
+        checkAssignable(s.source, { toType: s.target.type });
+        checkNotReadOnly(s.target);
     }
     BreakStatement(s) {
-      checkInLoop(this)
+        checkInLoop(this);
     }
     ReturnStatement(s) {
-      checkInFunction(this)
-      this.analyze(s.expression)
-      checkReturnable({ expression: s.expression, from: this.subroutine })
+        checkInFunction(this);
+        this.analyze(s.expression);
+        checkReturnable({ expression: s.expression, from: this.subroutine });
     }
     ConditionalStatement(s) {
-      this.analyze(s.test)
-      checkBoolean(s.test)
-      this.newChildContext().analyze(s.consequent)
-      if (s.alternate !== null) {
-        this.analyze(s.alternate)
-      }
+        this.analyze(s.test);
+        checkBoolean(s.test);
+        this.newChildContext().analyze(s.consequent);
+        if (s.alternate !== null) {
+            this.analyze(s.alternate);
+        }
     }
     WhileStatement(s) {
-      this.analyze(s.test)
-      checkBoolean(s.test)
-      this.newChildContext({ inLoop: true }).analyze(s.body)
+        this.analyze(s.test);
+        checkBoolean(s.test);
+        this.newChildContext({ inLoop: true }).analyze(s.body);
     }
     IncrementalForStatement(s) {
-      this.analyze(s.test.left)
-      checkBoolean(s.test.left)
-      this.analyze(s.test.right)
-      checkBoolean(s.test.right)
+        this.analyze(s.test.left);
+        checkBoolean(s.test.left);
+        this.analyze(s.test.right);
+        checkBoolean(s.test.right);
 
-      this.analyze(s.increment)
-      checkNumeric(s.increment)
+        this.analyze(s.increment);
+        checkNumeric(s.increment);
 
-      this.analyze(s.declaration.initializer)
-      checkNumeric(s.declaration.initializer.type)
-      s.iterator = new Variable(s.declaration.variable.lexeme, s.declaration.initializer.type, s.declaration.readOnly)
-      const bodyContext = this.newChildContext({ inLoop: true })
-      bodyContext.add(s.iterator.name, s.iterator)
-      bodyContext.analyze(s.body)
+        this.analyze(s.declaration.initializer);
+        checkNumeric(s.declaration.initializer.type);
+        s.iterator = new Variable(
+            s.declaration.variable.lexeme,
+            s.declaration.initializer.type,
+            s.declaration.readOnly
+        );
+        const bodyContext = this.newChildContext({ inLoop: true });
+        bodyContext.add(s.iterator.name, s.iterator);
+        bodyContext.analyze(s.body);
     }
     ElementwiseForStatement(s) {
-      this.analyze(s.source)
-      checkList(s.source)
+        this.analyze(s.source);
+        checkList(s.source);
 
-      const bodyContext = this.newChildContext({ inLoop: true })
-      s.iterator = new Variable(s.iterator.lexeme, s.source.type.baseType, true)
-      bodyContext.add(s.iterator.name, s.iterator)
+        const bodyContext = this.newChildContext({ inLoop: true });
+        s.iterator = new Variable(
+            s.iterator.lexeme,
+            s.source.type.baseType,
+            true
+        );
+        bodyContext.add(s.iterator.name, s.iterator);
 
-      this.analyze(s.productionDec)
-      
-      bodyContext.analyze(s.body)
+        this.analyze(s.productionDec);
+
+        bodyContext.analyze(s.body);
     }
     Conditional(e) {
-      this.analyze(e.test)
-      checkBoolean(e.test)
-      this.analyze(e.consequent)
-      this.analyze(e.alternate)
-      checkHaveSameType(e.consequent, e.alternate)
-      e.type = e.consequent.type
+        this.analyze(e.test);
+        checkBoolean(e.test);
+        this.analyze(e.consequent);
+        this.analyze(e.alternate);
+        checkHaveSameType(e.consequent, e.alternate);
+        e.type = e.consequent.type;
     }
     BinaryExpression(e) {
-      this.analyze(e.left)
-      this.analyze(e.right)
-      if (["^", "-", "*", "/", "//", "%", "+"].includes(e.op.lexeme)) {
-        checkNumeric(e.left)
-        checkHaveSameType(e.left, e.right)
-        e.type = e.left.type
-      } else if (["<", "<=", ">", ">="].includes(e.op.lexeme)) {
-        checkNumeric(e.left)
-        checkHaveSameType(e.left, e.right)
-        e.type = Type.BOOL
-      } else if (["==", "!=", "is"].includes(e.op.lexeme)) {
-        checkHaveSameType(e.left, e.right)
-        e.type = Type.BOOL
-      } else if (["or", "and"].includes(e.op.lexeme)) {
-        checkBoolean(e.left)
-        checkBoolean(e.right)
-        e.type = Type.BOOL
-      } else if (["C=", "C<"].includes(e.op.lexeme)) {
-        checkList(e.right)
-        checkList(e.left)
-        e.type = Type.BOOL
-      } else if (["in"].includes(e.op.lexeme)) {
-        checkList(e.right)
-        checkHaveSameType(e.left, e.right.baseType)
-        e.type = Type.BOOL
-      }
+        this.analyze(e.left);
+        this.analyze(e.right);
+        if (["^", "-", "*", "/", "//", "%", "+"].includes(e.op.lexeme)) {
+            checkNumeric(e.left);
+            checkHaveSameType(e.left, e.right);
+            e.type = e.left.type;
+        } else if (["<", "<=", ">", ">="].includes(e.op.lexeme)) {
+            checkNumeric(e.left);
+            checkHaveSameType(e.left, e.right);
+            e.type = Type.BOOL;
+        } else if (["==", "!=", "is"].includes(e.op.lexeme)) {
+            checkHaveSameType(e.left, e.right);
+            e.type = Type.BOOL;
+        } else if (["or", "and"].includes(e.op.lexeme)) {
+            checkBoolean(e.left);
+            checkBoolean(e.right);
+            e.type = Type.BOOL;
+        } else if (["C=", "C<"].includes(e.op.lexeme)) {
+            checkList(e.right);
+            checkList(e.left);
+            e.type = Type.BOOL;
+        } else if (["in"].includes(e.op.lexeme)) {
+            checkList(e.right);
+            checkHaveSameType(e.left, e.right.baseType);
+            e.type = Type.BOOL;
+        }
     }
     UnaryExpression(e) {
-      this.analyze(e.operand)
-      if (["-", "++", "--"].includes(e.op.lexeme)) {
-        checkNumeric(e.operand)
-        e.type = e.operand.type
-      } else if (e.op.lexeme === "!") {
-        checkBoolean(e.operand)
-        e.type = Type.BOOL
-      }
+        this.analyze(e.operand);
+        if (["-", "++", "--"].includes(e.op.lexeme)) {
+            checkNumeric(e.operand);
+            e.type = e.operand.type;
+        } else if (e.op.lexeme === "!") {
+            checkBoolean(e.operand);
+            e.type = Type.BOOL;
+        }
     }
     SubscriptExpression(e) {
-      this.analyze(e.array)
-      e.type = e.array.type.baseType
-      this.analyze(e.index)
-      checkInteger(e.index)
+        this.analyze(e.array);
+        e.type = e.array.type.baseType;
+        this.analyze(e.index);
+        checkInteger(e.index);
     }
     ArrayExpression(a) {
-      this.analyze(a.elements)
-      checkAllHaveSameType(a.elements)
-      a.type = new ArrayType(a.elements[0].type)
+        this.analyze(a.elements);
+        checkAllHaveSameType(a.elements);
+        a.type = new ArrayType(a.elements[0].type);
+    }
+    List(l) {
+        l.elements.forEach((element) => this.analyze(element));
+        checkAllHaveSameType(l.elements);
+        l.type = new ListType(l.elements[0].type);
     }
     EmptyArray(e) {
-      this.analyze(e.baseType)
-      e.type = new ArrayType(e.baseType?.value ?? e.baseType)
+        this.analyze(e.baseType);
+        e.type = new ArrayType(e.baseType?.value ?? e.baseType);
     }
     MemberExpression(e) {
-      this.analyze(e.object)
-      checkMemberDeclared(e.field.lexeme, { in: e.object })
-      e.field = e.object.type.fields.find(f => f.name.lexeme === e.field.lexeme)
-      e.type = e.field.type
+        this.analyze(e.object);
+        checkMemberDeclared(e.field.lexeme, { in: e.object });
+        e.field = e.object.type.fields.find(
+            (f) => f.name.lexeme === e.field.lexeme
+        );
+        e.type = e.field.type;
     }
     FunctionCall(c) {
-      this.analyze(c.callee)
-      const callee = c.callee?.value ?? c.callee
-      checkCallable(callee)
-      this.analyze(c.args)
-      if (callee.constructor === StructType || callee.constructor === ClassType) {
-        checkConstructorArguments(c.args, callee)
-        c.type = callee
-      } else {
-        checkFunctionCallArguments(c.args, callee.type)
-        c.type = callee.type.returnType
-      }
+        this.analyze(c.callee);
+        const callee = c.callee?.value ?? c.callee;
+        checkCallable(callee);
+        this.analyze(c.args);
+        if (
+            callee.constructor === StructType ||
+            callee.constructor === ClassType
+        ) {
+            checkConstructorArguments(c.args, callee);
+            c.type = callee;
+        } else {
+            checkFunctionCallArguments(c.args, callee.type);
+            c.type = callee.type.returnType;
+        }
     }
     ProcedureCall(c) {
-      this.analyze(c.callee)
-      const callee = c.callee?.value ?? c.callee
-      checkCallable(callee)
-      this.analyze(c.args)
-      if (callee.constructor === StructType || callee.constructor === ClassType) {
-        checkConstructorArguments(c.args, callee)
-        c.type = callee
-      } else {
-        checkFunctionCallArguments(c.args, callee.type)
-        c.type = callee.type.returnType
-      }
+        this.analyze(c.callee);
+        const callee = c.callee?.value ?? c.callee;
+        checkCallable(callee);
+        this.analyze(c.args);
+        if (
+            callee.constructor === StructType ||
+            callee.constructor === ClassType
+        ) {
+            checkConstructorArguments(c.args, callee);
+            c.type = callee;
+        } else {
+            checkFunctionCallArguments(c.args, callee.type);
+            c.type = callee.type.returnType;
+        }
     }
     Token(t) {
-      // For ids being used, not defined
-      if (t.category === "id") {
-        t.value = this.lookup(t.lexeme)
-        t.type = t.value.type
-      }
-      if (t.category === "num") [t.value, t.type] = [Number(t.lexeme), Type.NUM]
-      if (t.category === "string") [t.value, t.type] = [t.lexeme, Type.STRING]
-      if (t.category === "bool") [t.value, t.type] = [t.lexeme === "true", Type.BOOL]
-      if (t.category === "sym") {
-        switch(t.lexeme) {
-          case "num":
-            t.type = Type.NUM
-            break;
-
-          case "string":
-            t.type = Type.STRING
-            break;
-
-          case "bool":
-            t.type = Type.BOOL
-            break;
-
-          default:
-            const inner = t.lexeme.slice(1, t.lexeme.length - 1)
-            t.type = new ListType({description: inner})
-            t.value = t.lexeme
-            this.analyze({category: "sym", lexeme: inner})
+        // For ids being used, not defined
+        if (t.category === "id") {
+            t.value = this.lookup(t.lexeme);
+            t.type = t.value.type;
         }
-      }
+        if (t.category === "num")
+            [t.value, t.type] = [Number(t.lexeme), Type.NUM];
+        if (t.category === "string")
+            [t.value, t.type] = [t.lexeme, Type.STRING];
+        if (t.category === "bool")
+            [t.value, t.type] = [t.lexeme === "true", Type.BOOL];
+        if (t.category === "sym") {
+            switch (t.lexeme) {
+                case "num":
+                    t.type = Type.NUM;
+                    break;
+
+                case "string":
+                    t.type = Type.STRING;
+                    break;
+
+                case "bool":
+                    t.type = Type.BOOL;
+                    break;
+
+                default:
+                    const inner = t.lexeme.slice(1, t.lexeme.length - 1);
+                    t.type = new ListType({ description: inner });
+                    t.value = t.lexeme;
+                    this.analyze(new Token("sym", { contents: inner }));
+            }
+        }
     }
-    List(a) {
-      a.forEach(item => this.analyze(item))
+    Array(a) {
+        a.forEach((element) => this.analyze(element));
     }
-  }
-  
-  export default function analyze(node) {
-    const initialContext = new Context({})
+}
+
+export default function analyze(node) {
+    const initialContext = new Context({});
     for (const [name, type] of Object.entries(stdlib.fundamentum)) {
-      initialContext.add(name, type)
+        initialContext.add(name, type);
     }
-    initialContext.analyze(node)
-    return node
-  }  
+    initialContext.analyze(node);
+    return node;
+}
