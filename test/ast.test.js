@@ -44,7 +44,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#37]
   10 | VariableDeclaration id=(id,"count") type=(sym,"num") initializer=(num,"0") readOnly=false
   11 | WhileStatement test=(id,"counting") body=#12
   12 | Block statements=[#13,#15,#16,#17]
-  13 | PrintStatement argument=[#14]
+  13 | PrintStatement argument=#14
   14 | MemberAccess object=(id,"oneThroughTen") property=(id,"count")
   15 | Increment variable=(id,"count") prefix=false
   16 | Decrement variable=(id,"count") prefix=true
@@ -64,7 +64,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#37]
   30 | BinaryExpression op=(sym,"*") left=(num,"12") right=#31
   31 | BinaryExpression op=(sym,"^") left=(num,"10") right=#32
   32 | UnaryExpression op=(sym,"++") operand=(num,"0")
-  33 | PrintStatement argument=[#34]
+  33 | PrintStatement argument=#34
   34 | FunctionCall callee=#35 args=[]
   35 | MemberAccess object=(id,"oneThroughFive") property=(id,"pop")
   36 | ProcedureCall callee=(id,"success") args=[]
