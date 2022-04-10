@@ -381,11 +381,13 @@ class Context {
     }
     Increment(s) {
         this.analyze(s.variable);
-        checkNumeric(s.variable);
+        checkNotReadOnly(s.variable);
+        checkNumeric(s.variable.type);
     }
     Decrement(s) {
         this.analyze(s.variable);
-        checkNumeric(s.variable);
+        checkNotReadOnly(s.variable);
+        checkNumeric(s.variable.type);
     }
     Assignment(s) {
         this.analyze(s.source);
