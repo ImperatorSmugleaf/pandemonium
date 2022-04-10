@@ -33,47 +33,47 @@ num cube(num x) {
 }`;
 
 const expected = `   1 | Program statements=[#2,#4,#5,#36]
-   2 | VariableDeclaration variable=(Id,"oneThroughFive") type=#3 initializer=[(Num,"1"),(Num,"2"),(Num,"3"),(Num,"4"),(Num,"5")] readOnly=true
-   3 | ListType type=(Sym,"num")
-   4 | VariableDeclaration variable=(Id,"counting") type=(Sym,"bool") initializer=(Bool,"true") readOnly=true
-   5 | ProcedureDeclaration proc=(Id,"main") params=[#6] body=#8
-   6 | Parameter type=#7 id=(Id,"args")
-   7 | ListType type=(Sym,"string")
+   2 | VariableDeclaration id=(id,"oneThroughFive") type=#3 initializer=[(num,"1"),(num,"2"),(num,"3"),(num,"4"),(num,"5")] readOnly=true
+   3 | ListDeclaration type=(sym,"num")
+   4 | VariableDeclaration id=(id,"counting") type=(sym,"bool") initializer=(bool,"true") readOnly=true
+   5 | ProcedureDeclaration proc=(id,"main") parameters=[#6] body=#8
+   6 | Parameter type=#7 id=(id,"args")
+   7 | ListDeclaration type=(sym,"string")
    8 | Block statements=[#9,#10,#17,#18,#19,#21,#32,#35]
-   9 | VariableDeclaration variable=(Id,"count") type=(Sym,"num") initializer=(Num,"0") readOnly=false
-  10 | WhileStatement test=(Id,"counting") body=#11
+   9 | VariableDeclaration id=(id,"count") type=(sym,"num") initializer=(num,"0") readOnly=false
+  10 | WhileStatement test=(id,"counting") body=#11
   11 | Block statements=[#12,#14,#15,#16]
   12 | PrintStatement argument=[#13]
-  13 | MemberAccess object=(Id,"oneThroughTen") property=(Id,"count")
-  14 | Increment variable=(Id,"count")
-  15 | Increment variable=(Id,"count")
+  13 | MemberAccess object=(id,"oneThroughTen") property=(id,"count")
+  14 | Increment variable=(id,"count")
+  15 | Increment variable=(id,"count")
   16 | NopeStatement 
-  17 | Assignment target=(Id,"count") operator=(Sym,"+=") source=(Num,"10")
-  18 | Assignment target=(Id,"count") operator=(Sym,"-=") source=(Num,"5")
-  19 | Assignment target=(Id,"count") operator=(Sym,"=") source=#20
-  20 | FunctionCall callee=(Id,"cube") args=[(Id,"count")]
-  21 | Assignment target=(Id,"count") operator=(Sym,"=") source=#22
-  22 | BinaryExpression op=(Sym,"or") left=#23 right=#24
-  23 | UnaryExpression op=(Sym,"!") operand=(Num,"124.623E-12")
-  24 | BinaryExpression op=(Sym,"and") left=#25 right=#27
-  25 | BinaryExpression op=(Sym,"==") left=#26 right=(Bool,"false")
-  26 | BinaryExpression op=(Sym,"<") left=(Num,"2") right=(Num,"4")
-  27 | BinaryExpression op=(Sym,"+") left=#28 right=#29
-  28 | UnaryExpression op=(Num,"6") operand=(Sym,"++")
-  29 | BinaryExpression op=(Sym,"*") left=(Num,"12") right=#30
-  30 | BinaryExpression op=(Sym,"^") left=(Num,"10") right=#31
-  31 | UnaryExpression op=(Sym,"++") operand=(Num,"0")
+  17 | Assignment target=(id,"count") operator=(sym,"+=") source=(num,"10")
+  18 | Assignment target=(id,"count") operator=(sym,"-=") source=(num,"5")
+  19 | Assignment target=(id,"count") operator=(sym,"=") source=#20
+  20 | FunctionCall callee=(id,"cube") args=[(id,"count")]
+  21 | Assignment target=(id,"count") operator=(sym,"=") source=#22
+  22 | BinaryExpression op=(sym,"or") left=#23 right=#24
+  23 | UnaryExpression op=(sym,"!") operand=(num,"124.623E-12")
+  24 | BinaryExpression op=(sym,"and") left=#25 right=#27
+  25 | BinaryExpression op=(sym,"==") left=#26 right=(bool,"false")
+  26 | BinaryExpression op=(sym,"<") left=(num,"2") right=(num,"4")
+  27 | BinaryExpression op=(sym,"+") left=#28 right=#29
+  28 | UnaryExpression op=(num,"6") operand=(sym,"++")
+  29 | BinaryExpression op=(sym,"*") left=(num,"12") right=#30
+  30 | BinaryExpression op=(sym,"^") left=(num,"10") right=#31
+  31 | UnaryExpression op=(sym,"++") operand=(num,"0")
   32 | PrintStatement argument=[#33]
   33 | FunctionCall callee=#34 args=[]
-  34 | MemberAccess object=(Id,"oneThroughFive") property=(Id,"pop")
-  35 | ProcedureCall callee=(Id,"success") args=[]
-  36 | FunctionDeclaration type=(Sym,"num") func=(Id,"cube") params=[#37] body=#38
-  37 | Parameter type=(Sym,"num") id=(Id,"x")
+  34 | MemberAccess object=(id,"oneThroughFive") property=(id,"pop")
+  35 | ProcedureCall callee=(id,"success") args=[]
+  36 | FunctionDeclaration type=(sym,"num") func=(id,"cube") parameters=[#37] body=#38
+  37 | Parameter type=(sym,"num") id=(id,"x")
   38 | Block statements=[#39,#42]
-  39 | VariableDeclaration variable=(Id,"triple") type=(Sym,"num") initializer=#40 readOnly=true
-  40 | BinaryExpression op=(Sym,"*") left=#41 right=(Id,"x")
-  41 | BinaryExpression op=(Sym,"*") left=(Id,"x") right=(Id,"x")
-  42 | YeetStatement argument=(Id,"triple")`;
+  39 | VariableDeclaration id=(id,"triple") type=(sym,"num") initializer=#40 readOnly=true
+  40 | BinaryExpression op=(sym,"*") left=#41 right=(id,"x")
+  41 | BinaryExpression op=(sym,"*") left=(id,"x") right=(id,"x")
+  42 | YeetStatement argument=(id,"triple")`;
 
 describe("The AST generator", () => {
     it("produces the expected AST for all node types", () => {

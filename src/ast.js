@@ -46,7 +46,11 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.VariableDeclaration(id.ast(), type.ast(), expression.ast(), true);
     },
 
-    Funcdec_function(type, id, _open, params, _close, block) {
+    InstanceField(id, _semi) {
+        return new core.ObjectFieldDeclaration(id.ast());
+    },
+
+    Subrtdec_function(type, id, _open, params, _close, block) {
         return new core.FunctionDeclaration(
             type.ast(),
             id.ast(),
@@ -55,7 +59,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         );
     },
 
-    Funcdec_procedure(_proc, id, _open, params, _close, block) {
+    Subrtdec_procedure(_proc, id, _open, params, _close, block) {
         return new core.ProcedureDeclaration(
             id.ast(),
             params.asIteration().ast(),
@@ -99,6 +103,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.UnpackedVariable(variable.ast());
     },
 
+    ListExp(_open, args, _close) {
+        return args.asIteration().ast();
+    },
+
     ForLoop_elementwise(_for, _open, declaration, elementId, _in, collection, _close, body) {
         return new core.ElementwiseForStatement(declaration.ast(), elementId.ast(), collection.ast(), body.ast());
     },
@@ -133,6 +141,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     VarName1_listaccess(source, _open, member, _close){
         return new core.MemberAccess(source.ast(), member.ast());
+    },
+
+    VarDecId_instance(source, _dot, member) {
+        return new core.MemberAccess(source.ast(), member.ast())
     },
 
     Exp_binary(left, op, right) {
@@ -171,10 +183,6 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.UnaryExpression(op.ast(), operand.ast());
     },
 
-    Exp10_list(_open, args, _close) {
-        return args.asIteration().ast();
-    },
-
     Exp10_grouping(_open, expression, _close) {
         return expression.ast();
     },
@@ -200,7 +208,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Type_list(_start, type, _end) {
-        return new core.ListType(type.ast());
+        return new core.ListDeclaration(type.ast());
     },
 
     TemplateLiteral(_begin, body, _end) {
@@ -212,31 +220,31 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     TemplateLiteralStmt_str(_first, _rest) {
-        return new core.Token("String", this.source)
+        return new core.Token("string", this.source)
     },
 
     id(_first, _rest) {
-        return new core.Token("Id", this.source);
+        return new core.Token("id", this.source);
     },
 
     true(_) {
-        return new core.Token("Bool", this.source);
+        return new core.Token("bool", this.source);
     },
 
     false(_) {
-        return new core.Token("Bool", this.source);
+        return new core.Token("bool", this.source);
     },
 
     num(_whole, _point, _fraction, _e, _sign, _exponent) {
-        return new core.Token("Num", this.source);
+        return new core.Token("num", this.source);
     },
 
     str(_start, _str, _end) {
-        return new core.Token("String", this.source);
+        return new core.Token("string", this.source);
     },
 
     _terminal() {
-        return new core.Token("Sym", this.source);
+        return new core.Token("sym", this.source);
     },
 
     _iter(...children) {

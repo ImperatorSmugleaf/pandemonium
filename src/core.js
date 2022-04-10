@@ -5,6 +5,7 @@
 
 import util from "util";
 
+// ------ AST NODES ------
 export class Program {
     constructor(statements) {
         Object.assign(this, { statements });
@@ -18,20 +19,20 @@ export class Block {
 }
 
 export class VariableDeclaration {
-    constructor(variable, type, initializer, readOnly) {
-        Object.assign(this, { variable, type, initializer, readOnly });
+    constructor(id, type, initializer, readOnly) {
+        Object.assign(this, { id, type, initializer, readOnly });
     }
 }
 
 export class FunctionDeclaration {
-    constructor(type, func, params, body) {
-        Object.assign(this, { type, func, params, body });
+    constructor(type, func, parameters, body) {
+        Object.assign(this, { type, func, parameters, body });
     }
 }
 
 export class ProcedureDeclaration {
-    constructor(proc, params, body) {
-        Object.assign(this, { proc, params, body });
+    constructor(proc, parameters, body) {
+        Object.assign(this, { proc, parameters, body });
     }
 }
 
@@ -72,8 +73,8 @@ export class IncrementalForStatement {
 }
 
 export class ElementwiseForStatement {
-    constructor(declaration, elementId, collection, body) {
-        Object.assign(this, { declaration, elementId, collection, body })
+    constructor(productionDec, iterator, source, body) {
+        Object.assign(this, { productionDec, iterator, source, body })
     }
 }
 
@@ -127,7 +128,7 @@ export class UnaryExpression {
     }
 }
 
-export class ListType {
+export class ListDeclaration {
     constructor(type) {
         Object.assign(this, { type });
     }
@@ -151,7 +152,12 @@ export class TemplateLiteral {
     }
 }
 
-//Token objects
+export class ObjectFieldDeclaration {
+    constructor(id) {
+        Object.assign(this, { type, id })
+    }
+}
+
 export class Token {
     constructor(category, source) {
         Object.assign(this, { category, source });
@@ -166,6 +172,80 @@ export class Parameter {
         Object.assign(this, { type, id });
     }
 }
+
+
+// ------ ANALYZER CLASSES ------
+export class Variable {
+    constructor(name, type, readOnly) {
+        Object.assign(this, { name, type, readOnly })
+    }
+}
+
+export class Type {
+    // Type of all basic types
+    static BOOL = new Type("bool")
+    static NUM = new Type("num")
+    static STRING = new Type("string")
+    constructor(description) {
+        Object.assign(this, { description })
+    }
+}
+
+export class Function {
+    // Generated when processing a function declaration
+    constructor(name, returnType) {
+        Object.assign(this, { name, returnType })
+    }
+}
+
+export class Procedure {
+    // Generated when processing a procedure declaration
+    constructor(name) {
+        Object.assign(this, { name })
+    }
+}
+
+export class ListType extends Type {
+    // Type of a list containing any type
+    constructor(baseType) {
+        super(`[${baseType.description}]`)
+        this.baseType = baseType
+    }
+}
+
+export class StructType {
+    // Generated when processing a struct declaration
+    constructor(name, fields) {
+        Object.assign(this, { name, fields })
+    }
+}
+
+export class ClassType extends Type {
+    // Generated when processing a class declaration
+    constructor(name, fields) {
+        super(name.lexeme)
+        Object.assign(this, { fields })
+    }
+}
+
+export class FunctionType extends Type {
+    // Generated when processing a function declaration
+    // Maps the parameters' types to the function's return type
+    // Ex. (num, string)->[bool]
+    constructor(paramTypes, returnType) {
+      super(`(${paramTypes.map(t => t.description).join(", ")})->${returnType.description}`)
+      Object.assign(this, { paramTypes, returnType })
+    }
+}
+
+export class ProcedureType extends Type {
+    // Generated when processing a procedure declaration
+    // Ex. (num, [string], bool)
+    constructor(paramTypes) {
+        super(`(${paramTypes.map(t => t.description).join(", ")})`)
+    }
+}
+
 
 //Dr. Toal's error message-er utilizing Ohm's API.
 /* c8 ignore next 47 */
