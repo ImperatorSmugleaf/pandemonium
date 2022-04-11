@@ -41,9 +41,9 @@ Pandemonium {
                 | elif "(" Exp ")" Block                        -- simple
                 | ThenElse                                      
     ThenElse    = else Block
-    StructDec   = struct id ObjectBlock
-    ClassDec    = class id ObjectBlock
-    ObjectBlock = "{" (VisibilityLabel | InstanceField | Subrtdec)+ "}"
+    StructDec   = struct id ObjectBody
+    ClassDec    = class id ObjectBody
+    ObjectBody  = "{" (VisibilityLabel | InstanceField | Subrtdec)+ "}"
     VisibilityLabel = (public | private) ":"
     InstanceField = id ";"
 
