@@ -57,7 +57,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     InstanceField(id, _semi) {
-        return new core.ObjectFieldDeclaration(id.ast());
+        return new core.FieldDeclaration(id.ast());
     },
 
     Subrtdec_function(type, id, _open, params, _close, block) {
@@ -83,6 +83,10 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
 
     ClassDec(_class, id, body) {
         return new core.Class(id.ast(), body.ast());
+    },
+
+    ObjectBody(_open, statements, _close) {
+        return new core.ObjectBody(statements.ast());
     },
 
     Increment_prefix(_inc, variable) {
