@@ -161,8 +161,12 @@ function checkIsAType(e) {
     check(e instanceof Type, "Type expected", e);
 }
 
-function checkList(e) {
+function checkIsList(e) {
     check(e.type.constructor === ListType, "List expected", e);
+}
+
+function checkListType(e) {
+    check(e instanceof ListType, "Type must be a list type");
 }
 
 function checkHaveSameType(e1, e2) {
@@ -317,14 +321,16 @@ class Context {
     VariableDeclaration(d) {
         this.analyze(d.initializer);
         this.analyze(d.type);
-        if (
-            d.initializer instanceof List &&
-            d.initializer.elements.length === 0
-        ) {
-            checkList(d.type);
-            d.initializer.type = d.type;
+        d.type = d.type.type;
+        if (d.initializer instanceof List) {
+            if (d.initializer.elements.length === 0) {
+                checkListType(d.type);
+                d.initializer.type = d.type;
+            } else {
+                checkHaveSameType(d, d.initializer);
+            }
         } else {
-            checkHaveSameType(d.type, d.initializer);
+            checkHaveSameType(d, d.initializer);
         }
 
         d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly);
@@ -412,12 +418,12 @@ class Context {
     Increment(s) {
         this.analyze(s.variable);
         checkNotReadOnly(s.variable);
-        checkNumeric(s.variable.type);
+        checkNumeric(s.variable);
     }
     Decrement(s) {
         this.analyze(s.variable);
         checkNotReadOnly(s.variable);
-        checkNumeric(s.variable.type);
+        checkNumeric(s.variable);
     }
     Assignment(s) {
         this.analyze(s.source);
@@ -468,7 +474,7 @@ class Context {
     }
     ElementwiseForStatement(s) {
         this.analyze(s.source);
-        checkList(s.source);
+        checkIsList(s.source);
 
         const bodyContext = this.newChildContext({ inLoop: true });
         s.iterator = new Variable(
@@ -512,11 +518,11 @@ class Context {
             checkBoolean(e.right);
             e.type = Type.BOOL;
         } else if (["C=", "C<"].includes(e.op.lexeme)) {
-            checkList(e.right);
-            checkList(e.left);
+            checkIsList(e.right);
+            checkIsList(e.left);
             e.type = Type.BOOL;
         } else if (["in"].includes(e.op.lexeme)) {
-            checkList(e.right);
+            checkIsList(e.right);
             checkHaveSameType(e.left, e.right.baseType);
             e.type = Type.BOOL;
         }
