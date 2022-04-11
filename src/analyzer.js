@@ -183,7 +183,7 @@ function checkAllHaveSameType(expressions) {
 
 function checkNotRecursive(object) {
     check(
-        !object.fields.map((f) => f.type).includes(object),
+        !object.body.fields.map((f) => f.type).includes(object),
         "Struct and class types must not be recursive"
     );
 }
@@ -330,57 +330,67 @@ class Context {
         d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly);
         this.add(d.id.lexeme, d.id.value);
     }
-    TypeDeclaration(d) {
-        // Add early to allow recursion
-        this.add(d.type.description, d.type);
-        this.analyze(d.type.fields);
-        checkFieldsAllDistinct(d.type.fields);
-        checkNotRecursive(d.type);
-    }
-    Field(f) {
-        this.analyze(f.type);
-        if (f.type instanceof Token) f.type = f.type.value;
-        checkIsAType(f.type);
-    }
     FunctionDeclaration(d) {
         this.analyze(d.type);
         checkIsAType(d.type.type);
-        d.func.value = new Function(d.func.lexeme, d.type.type);
-        d.func.value.parameters = d.parameters;
+        d.name.value = new Function(d.name.lexeme, d.type.type);
+        d.name.value.parameters = d.parameters;
         // When entering a function body, we must reset the inLoop setting,
         // because it is possible to declare a function inside a loop!
         const childContext = this.newChildContext({
             inLoop: false,
             inFunction: true,
-            subroutine: d.func.value,
+            subroutine: d.name.value,
         });
-        childContext.analyze(d.func.value.parameters);
-        d.func.value.type = new FunctionType(
-            d.func.value.parameters.map((p) => p.type),
-            d.func.value.returnType
+        childContext.analyze(d.name.value.parameters);
+        d.name.value.type = new FunctionType(
+            d.name.value.parameters.map((p) => p.type),
+            d.name.value.returnType
         );
         // Add before analyzing the body to allow recursion
-        this.add(d.func.lexeme, d.func.value);
+        this.add(d.name.lexeme, d.name.value);
         childContext.analyze(d.body);
     }
     ProcedureDeclaration(d) {
-        d.proc.value = new Procedure(d.proc.lexeme);
-        d.proc.value.parameters = d.parameters;
+        d.name.value = new Procedure(d.name.lexeme);
+        d.name.value.parameters = d.parameters;
         const childContext = this.newChildContext({
             inLoop: false,
-            subroutine: d.proc.value,
+            subroutine: d.name.value,
         });
-        childContext.analyze(d.proc.value.parameters);
-        d.proc.value.type = new ProcedureType(
-            d.proc.value.parameters.map((p) => p.type)
+        childContext.analyze(d.name.value.parameters);
+        d.name.value.type = new ProcedureType(
+            d.name.value.parameters.map((p) => p.type)
         );
-        this.add(d.proc.lexeme, d.proc.value);
+        this.add(d.name.lexeme, d.name.value);
         childContext.analyze(d.body);
     }
     ListDeclaration(l) {
         this.analyze(l.type);
         l.type = new ListType(l.type.type);
     }
+    Struct(s) {
+        // Add early to allow recursion
+        s.type = new StructType(s.id.lexeme);
+        this.add(s.id, s.body);
+        this.analyze(s.body);
+        checkFieldsAllDistinct(s.body.fields);
+        checkNotRecursive(s);
+    }
+    Class(c) {
+        // Add early to allow recursion
+        c.type = new ClassType(c.id.lexeme);
+        this.add(c.id, c.body);
+        this.analyze(c.body);
+        checkFieldsAllDistinct(c.body.fields);
+        checkNotRecursive(c);
+    }
+    ObjectBody(b) {
+        for (let field of b.fields) {
+            this.analyze(field);
+        }
+    }
+    FieldDeclaration(d) {}
     Parameter(p) {
         this.analyze(p.type);
         if (p.type instanceof Token) p.type = p.type.value;
@@ -526,11 +536,6 @@ class Context {
         e.type = e.array.type.baseType;
         this.analyze(e.index);
         checkInteger(e.index);
-    }
-    ArrayExpression(a) {
-        this.analyze(a.elements);
-        checkAllHaveSameType(a.elements);
-        a.type = new ArrayType(a.elements[0].type);
     }
     List(l) {
         if (l.elements.length > 0) {
