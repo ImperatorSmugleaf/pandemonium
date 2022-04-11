@@ -43,7 +43,7 @@ Pandemonium {
     ThenElse    = else Block
     StructDec   = struct id ObjectBlock
     ClassDec    = class id ObjectBlock
-    ObjectBlock = "{" (Statement | VisibilityLabel | InstanceField)+ "}"
+    ObjectBlock = "{" (VisibilityLabel | InstanceField | Subrtdec)+ "}"
     VisibilityLabel = (public | private) ":"
     InstanceField = id ";"
 
