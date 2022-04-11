@@ -77,6 +77,14 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         );
     },
 
+    StructDec(_struct, id, body) {
+        return new core.Struct(id.ast(), body.ast());
+    },
+
+    ClassDec(_class, id, body) {
+        return new core.Class(id.ast(), body.ast());
+    },
+
     Increment_prefix(_inc, variable) {
         return new core.Increment(variable.ast(), true);
     },

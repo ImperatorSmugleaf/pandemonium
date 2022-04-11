@@ -1,0 +1,1 @@
+proc p() {print("Hello, world!");}

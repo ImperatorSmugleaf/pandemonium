@@ -164,9 +164,21 @@ export class TemplateLiteral {
     }
 }
 
-export class ObjectFieldDeclaration {
+export class Struct {
+    constructor(id, body) {
+        Object.assign(this, { id, body });
+    }
+}
+
+export class Class {
+    constructor(id, body) {
+        Object.assign(this, { id, body });
+    }
+}
+
+export class FieldDeclaration {
     constructor(id) {
-        Object.assign(this, { type, id });
+        Object.assign(this, { id });
     }
 }
 
