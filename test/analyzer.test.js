@@ -18,8 +18,14 @@ const semanticChecks = [
     ["initialize with empty list", "set a: [num] = [];"],
     ["procedure declaration", 'proc p() {print("Hello, world!");}'],
     ["function declaration", "num f() {yeet 1;}"],
-    ["struct declaration", "struct S {field; num f() {yeet 1;}}"],
-    ["class declaration", "class S {field; num f() {yeet 1;}}"],
+    [
+        "struct declaration",
+        'struct S {field; num f() {yeet 1;} proc p() {print("hi!");}}',
+    ],
+    [
+        "class declaration",
+        'class S {field; num f() {yeet 1;} proc j() {print("Howdy!");}}',
+    ],
     ["assign lists", "now a: [num] = [];now b: [num] = [1];a=b;b=a;"],
     ["assign to list element", "set a: [num] = [1,2,3]; a[1]=100;"],
     ["yeet", "bool f() { yeet true; }"],
