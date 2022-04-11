@@ -37,7 +37,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#37]
    3 | ListDeclaration type=(sym,"num")
    4 | List elements=[(num,"1"),(num,"2"),(num,"3"),(num,"4"),(num,"5")]
    5 | VariableDeclaration id=(id,"counting") type=(sym,"bool") initializer=(bool,"true") readOnly=true
-   6 | ProcedureDeclaration proc=(id,"main") parameters=[#7] body=#9
+   6 | ProcedureDeclaration name=(id,"main") parameters=[#7] body=#9
    7 | Parameter type=#8 id=(id,"args")
    8 | ListDeclaration type=(sym,"string")
    9 | Block statements=[#10,#11,#18,#19,#20,#22,#33,#36]
@@ -68,7 +68,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#37]
   34 | FunctionCall callee=#35 args=[]
   35 | MemberAccess object=(id,"oneThroughFive") property=(id,"pop")
   36 | ProcedureCall callee=(id,"success") args=[]
-  37 | FunctionDeclaration type=(sym,"num") func=(id,"cube") parameters=[#38] body=#39
+  37 | FunctionDeclaration type=(sym,"num") name=(id,"cube") parameters=[#38] body=#39
   38 | Parameter type=(sym,"num") id=(id,"x")
   39 | Block statements=[#40,#43]
   40 | VariableDeclaration id=(id,"triple") type=(sym,"num") initializer=#41 readOnly=true
