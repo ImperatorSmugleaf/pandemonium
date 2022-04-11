@@ -25,14 +25,14 @@ export class VariableDeclaration {
 }
 
 export class FunctionDeclaration {
-    constructor(type, func, parameters, body) {
-        Object.assign(this, { type, func, parameters, body });
+    constructor(type, name, parameters, body) {
+        Object.assign(this, { type, name, parameters, body });
     }
 }
 
 export class ProcedureDeclaration {
-    constructor(proc, parameters, body) {
-        Object.assign(this, { proc, parameters, body });
+    constructor(name, parameters, body) {
+        Object.assign(this, { name, parameters, body });
     }
 }
 
@@ -176,9 +176,15 @@ export class Class {
     }
 }
 
+export class ObjectBody {
+    constructor(fields) {
+        Object.assign(this, { fields });
+    }
+}
+
 export class FieldDeclaration {
-    constructor(id) {
-        Object.assign(this, { id });
+    constructor(name) {
+        Object.assign(this, { name });
     }
 }
 
@@ -238,16 +244,15 @@ export class ListType extends Type {
 
 export class StructType {
     // Generated when processing a struct declaration
-    constructor(name, fields) {
-        Object.assign(this, { name, fields });
+    constructor(name) {
+        Object.assign(this, { name });
     }
 }
 
 export class ClassType extends Type {
     // Generated when processing a class declaration
-    constructor(name, fields) {
+    constructor(name) {
         super(name.lexeme);
-        Object.assign(this, { fields });
     }
 }
 
