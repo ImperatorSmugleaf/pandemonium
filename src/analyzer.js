@@ -456,23 +456,17 @@ class Context {
         this.newChildContext({ inLoop: true }).analyze(s.body);
     }
     IncrementalForStatement(s) {
-        this.analyze(s.test.left);
-        checkBoolean(s.test.left);
-        this.analyze(s.test.right);
-        checkBoolean(s.test.right);
+        const bodyContext = this.newChildContext({ inLoop: true });
 
-        this.analyze(s.increment);
+        bodyContext.analyze(s.declaration);
+        checkNumeric(s.declaration);
+
+        bodyContext.analyze(s.test);
+        checkBoolean(s.test);
+
+        bodyContext.analyze(s.increment);
         checkNumeric(s.increment);
 
-        this.analyze(s.declaration.initializer);
-        checkNumeric(s.declaration.initializer.type);
-        s.iterator = new Variable(
-            s.declaration.variable.lexeme,
-            s.declaration.initializer.type,
-            s.declaration.readOnly
-        );
-        const bodyContext = this.newChildContext({ inLoop: true });
-        bodyContext.add(s.iterator.name, s.iterator);
         bodyContext.analyze(s.body);
     }
     ElementwiseForStatement(s) {
@@ -487,7 +481,7 @@ class Context {
         );
         bodyContext.add(s.iterator.name, s.iterator);
 
-        this.analyze(s.productionDec);
+        bodyContext.analyze(s.productionDec);
 
         bodyContext.analyze(s.body);
     }
@@ -529,7 +523,7 @@ class Context {
         this.analyze(e.operand);
         if (["-", "++", "--"].includes(e.op.lexeme)) {
             checkNumeric(e.operand);
-            e.type = e.operand.type;
+            e.type = Type.NUM;
         } else if (e.op.lexeme === "!") {
             checkBoolean(e.operand);
             e.type = Type.BOOL;
@@ -629,11 +623,25 @@ class Context {
                     t.type = Type.BOOL;
                     break;
 
+                case "++":
+                    t.type = Type.NUM;
+                    break;
+
+                case "--":
+                    t.type = Type.NUM;
+                    break;
+
+                case "-":
+                    t.type = Type.NUM;
+                    break;
+
                 default:
-                    const inner = t.lexeme.slice(1, t.lexeme.length - 1);
-                    t.type = new ListType({ description: inner });
-                    t.value = t.lexeme;
-                    this.analyze(new Token("sym", { contents: inner }));
+                    if (t.lexeme.includes("[")) {
+                        const inner = t.lexeme.slice(1, t.lexeme.length - 1);
+                        t.type = new ListType({ description: inner });
+                        t.value = t.lexeme;
+                        this.analyze(new Token("sym", { contents: inner }));
+                    }
             }
         }
     }
