@@ -79,7 +79,7 @@ Object.assign(ListType.prototype, {
     },
 });
 
-Object.assign(StructType.prototype, {
+/* Object.assign(StructType.prototype, {
     isEquivalentTo(target) {
         // T is equivalent to U only when all of T's fields & U's fields are equal.
         return (
@@ -98,8 +98,8 @@ Object.assign(StructType.prototype, {
         );
     },
 });
-
-Object.assign(ClassType.prototype, {
+ */
+/* Object.assign(ClassType.prototype, {
     // T is equivalent to U if T and U have the same reference.
 
     isAssignableTo(target) {
@@ -108,9 +108,9 @@ Object.assign(ClassType.prototype, {
             this.name.isEquivalentTo(target.name)
         );
     },
-});
+}); */
 
-Object.assign(FunctionType.prototype, {
+/* Object.assign(FunctionType.prototype, {
     isEquivalentTo(target) {
         return (
             target.constructor === FunctionType &&
@@ -121,7 +121,7 @@ Object.assign(FunctionType.prototype, {
             )
         );
     },
-    isAssignableTo(target) {
+     isAssignableTo(target) {
         // Functions are covariant on return types, contravariant on parameters.
         return (
             target.constructor === FunctionType &&
@@ -131,8 +131,8 @@ Object.assign(FunctionType.prototype, {
                 target.paramTypes[i].isAssignableTo(t)
             )
         );
-    },
-});
+    }, 
+}); */
 
 /**************************
  *  VALIDATION FUNCTIONS  *
@@ -215,12 +215,12 @@ function checkFieldsAllDistinct(fields) {
     );
 }
 
-function checkMemberDeclared(field, { in: struct }) {
+/* function checkMemberDeclared(field, { in: struct }) {
     check(
         struct.type.fields.map((f) => f.name.lexeme).includes(field),
         "No such field"
     );
-}
+} */
 
 function checkInLoop(context) {
     check(context.inLoop, "Nope can only appear in a loop");
@@ -258,10 +258,10 @@ function checkFunctionCallArguments(args, calleeType) {
     checkArgumentsMatch(args, calleeType.paramTypes);
 }
 
-function checkConstructorArguments(args, structType) {
+/* function checkConstructorArguments(args, structType) {
     const fieldTypes = structType.fields.map((f) => f.type);
     checkArgumentsMatch(args, fieldTypes);
-}
+} */
 
 /***************************************
  *  ANALYSIS TAKES PLACE IN A CONTEXT  *
@@ -409,18 +409,18 @@ class Context {
         checkIsAType(p.type);
         this.add(p.id.lexeme, p);
     }
-    ListType(t) {
+    /* ListType(t) {
         this.analyze(t.baseType);
         if (t.baseType instanceof Token) t.baseType = t.baseType.value;
-    }
-    FunctionType(t) {
+    } */
+    /* FunctionType(t) {
         this.analyze(t.paramTypes);
         t.paramTypes = t.paramTypes.map((p) =>
             p instanceof Token ? p.value : p
         );
         this.analyze(t.returnType);
         if (t.returnType instanceof Token) t.returnType = t.returnType.value;
-    }
+    } */
     Increment(s) {
         this.analyze(s.variable);
         checkNotReadOnly(s.variable);
@@ -518,7 +518,12 @@ class Context {
             e.type = Type.BOOL;
         } else if (["in"].includes(e.op.lexeme)) {
             checkIsList(e.right);
-            checkHaveSameType(e.left, e.right.baseType);
+            console.log(e.left);
+            console.log(e.right);
+            check(
+                e.left.type.isEquivalentTo(e.right.type.baseType),
+                "Operands do not have the same type"
+            );
             e.type = Type.BOOL;
         }
     }
@@ -542,12 +547,6 @@ class Context {
         this.analyze(a.exp);
         checkInteger(a.exp);
     }
-    MemberAccess(a) {
-        this.analyze(a.object);
-        this.analyze(a.property);
-        checkMemberDeclared(a.property, { in: a.object });
-        a.type = a.property.type;
-    }
     List(l) {
         if (l.elements.length > 0) {
             l.elements.forEach((element) => this.analyze(element));
@@ -557,24 +556,20 @@ class Context {
             l.type = null;
         }
     }
-    EmptyArray(e) {
-        this.analyze(e.baseType);
-        e.type = new ArrayType(e.baseType?.value ?? e.baseType);
-    }
-    MemberExpression(e) {
+    /* MemberAccess(e) {
         this.analyze(e.object);
         checkMemberDeclared(e.field.lexeme, { in: e.object });
         e.field = e.object.type.fields.find(
             (f) => f.name.lexeme === e.field.lexeme
         );
         e.type = e.field.type;
-    }
+    } */
     FunctionCall(c) {
         this.analyze(c.callee);
-        const callee = c.callee?.value ?? c.callee;
+        const callee = c.callee.value;
         checkCallable(callee);
         this.analyze(c.args);
-        if (
+        /* if (
             callee.constructor === StructType ||
             callee.constructor === ClassType
         ) {
@@ -583,14 +578,16 @@ class Context {
         } else {
             checkFunctionCallArguments(c.args, callee.type);
             c.type = callee.type.returnType;
-        }
+        } */
+        checkFunctionCallArguments(c.args, callee.type);
+        c.type = callee.type.returnType;
     }
     ProcedureCall(c) {
         this.analyze(c.callee);
-        const callee = c.callee?.value ?? c.callee;
+        const callee = c.callee.value;
         checkCallable(callee);
         this.analyze(c.args);
-        if (
+        /* if (
             callee.constructor === StructType ||
             callee.constructor === ClassType
         ) {
@@ -599,7 +596,8 @@ class Context {
         } else {
             checkFunctionCallArguments(c.args, callee.type);
             c.type = callee.type.returnType;
-        }
+        } */
+        checkFunctionCallArguments(c.args, callee.type);
     }
     Token(t) {
         // For ids being used, not defined
@@ -626,26 +624,6 @@ class Context {
                 case "bool":
                     t.type = Type.BOOL;
                     break;
-
-                case "++":
-                    t.type = Type.NUM;
-                    break;
-
-                case "--":
-                    t.type = Type.NUM;
-                    break;
-
-                case "-":
-                    t.type = Type.NUM;
-                    break;
-
-                default:
-                    if (t.lexeme.includes("[")) {
-                        const inner = t.lexeme.slice(1, t.lexeme.length - 1);
-                        t.type = new ListType({ description: inner });
-                        t.value = t.lexeme;
-                        this.analyze(new Token("sym", { contents: inner }));
-                    }
             }
         }
     }
