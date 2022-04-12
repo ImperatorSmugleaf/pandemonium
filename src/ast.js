@@ -118,7 +118,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     Variable_subscript(variable, _open, exp, _close) {
-        return new core.MemberAccess(variable.ast(), exp.ast());
+        return new core.ListAccess(variable.ast(), exp.ast());
     },
 
     Variable_memberaccess(variable, _dot, property) {
@@ -206,7 +206,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
     },
 
     VarName1_listaccess(source, _open, member, _close) {
-        return new core.MemberAccess(source.ast(), member.ast());
+        return new core.ListAccess(source.ast(), member.ast());
     },
 
     VarDecId_instance(source, _dot, member) {

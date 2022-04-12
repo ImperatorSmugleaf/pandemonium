@@ -102,6 +102,12 @@ export class MemberAccess {
     }
 }
 
+export class ListAccess {
+    constructor(object, property) {
+        Object.assign(this, { object, property });
+    }
+}
+
 export class NopeStatement {}
 
 export class FunctionCall {
