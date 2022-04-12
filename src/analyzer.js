@@ -42,6 +42,9 @@ import {
     error,
     ListDeclaration,
     ProcedureType,
+    ConditionalStatement,
+    ElseStatement,
+    YeetStatement,
     List,
 } from "./core.js";
 import * as stdlib from "./stdlib.js";
@@ -121,7 +124,7 @@ Object.assign(ListType.prototype, {
             )
         );
     },
-     isAssignableTo(target) {
+    isAssignableTo(target) {
         // Functions are covariant on return types, contravariant on parameters.
         return (
             target.constructor === FunctionType &&
@@ -131,7 +134,29 @@ Object.assign(ListType.prototype, {
                 target.paramTypes[i].isAssignableTo(t)
             )
         );
-    }, 
+    },
+}); */
+
+/* Object.assign(ProcedureType.prototype, {
+    isEquivalentTo(target) {
+        return (
+            target.constructor === ProcedureType &&
+            this.paramTypes.length === target.paramTypes.length &&
+            this.paramTypes.every((t, i) =>
+                target.paramTypes[i].isEquivalentTo(t)
+            )
+        );
+    },
+    isAssignableTo(target) {
+        // Functions are covariant on return types, contravariant on parameters.
+        return (
+            target.constructor === ProcedureType &&
+            this.paramTypes.length === target.paramTypes.length &&
+            this.paramTypes.every((t, i) =>
+                target.paramTypes[i].isAssignableTo(t)
+            )
+        );
+    },
 }); */
 
 /**************************
@@ -258,6 +283,28 @@ function checkFunctionCallArguments(args, calleeType) {
     checkArgumentsMatch(args, calleeType.paramTypes);
 }
 
+function checkAlwaysReturns(functionBody) {
+    let returns = false;
+    returns = alwaysReturns(functionBody);
+    check(returns, "Functions must always yeet a value");
+}
+
+function alwaysReturns(block) {
+    for (let statement of block.statements) {
+        if (statement instanceof YeetStatement) {
+            return true;
+        } else if (
+            statement instanceof ConditionalStatement &&
+            statement.alternate instanceof ElseStatement &&
+            alwaysReturns(statement.consequent) &&
+            alwaysReturns(statement.alternate.body)
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /* function checkConstructorArguments(args, structType) {
     const fieldTypes = structType.fields.map((f) => f.type);
     checkArgumentsMatch(args, fieldTypes);
@@ -342,8 +389,9 @@ class Context {
     }
     FunctionDeclaration(d) {
         this.analyze(d.type);
-        checkIsAType(d.type.type);
-        d.name.value = new Function(d.name.lexeme, d.type.type);
+        d.type = this.findType(d.type);
+        checkIsAType(d.type);
+        d.name.value = new Function(d.name.lexeme, d.type);
         d.name.value.parameters = d.parameters;
         // When entering a function body, we must reset the inLoop setting,
         // because it is possible to declare a function inside a loop!
@@ -360,6 +408,7 @@ class Context {
         // Add before analyzing the body to allow recursion
         this.add(d.name.lexeme, d.name.value);
         childContext.analyze(d.body);
+        checkAlwaysReturns(d.body);
     }
     ProcedureDeclaration(d) {
         d.name.value = new Procedure(d.name.lexeme);
@@ -403,14 +452,12 @@ class Context {
     FieldDeclaration(d) {}
     Parameter(p) {
         this.analyze(p.type);
-        if (p.type instanceof Token) p.type = p.type.type;
-        if (p.type instanceof ListDeclaration) p.type = p.type.type;
+        p.type = this.findType(p.type);
 
         checkIsAType(p.type);
         this.add(p.id.lexeme, p);
     }
     /* ListType(t) {
-        this.analyze(t.baseType);
         if (t.baseType instanceof Token) t.baseType = t.baseType.value;
     } */
     /* FunctionType(t) {
@@ -518,8 +565,6 @@ class Context {
             e.type = Type.BOOL;
         } else if (["in"].includes(e.op.lexeme)) {
             checkIsList(e.right);
-            console.log(e.left);
-            console.log(e.right);
             check(
                 e.left.type.isEquivalentTo(e.right.type.baseType),
                 "Operands do not have the same type"
@@ -624,11 +669,36 @@ class Context {
                 case "bool":
                     t.type = Type.BOOL;
                     break;
+
+                /* default:
+                    if (t.lexeme.includes("[")) {
+                        const inner = t.lexeme.slice(1, t.lexeme.length - 1);
+                        t.type = new ListType({ description: inner });
+                        t.value = t.lexeme;
+                        this.analyze(new Token("sym", { contents: inner }));
+                    } */
             }
         }
     }
     Array(a) {
         a.forEach((element) => this.analyze(element));
+    }
+
+    findType(type) {
+        if (type instanceof Token) {
+            if (type.category === "sym") {
+                return type.type;
+            } else if (type.category === "id") {
+                /* const entity = this.lookup(type.lexeme);
+                if (
+                    entity instanceof StructType ||
+                    entity instanceof ClassType
+                ) {
+                    return entity;
+                } */
+            }
+        } else if (type instanceof ListDeclaration) return type.type;
+        return type;
     }
 }
 
