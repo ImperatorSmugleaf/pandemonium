@@ -22,7 +22,7 @@ const semanticChecks = [
     ["unary operators", "now x: bool = false; now y: num = 1; x = !x; y = -y;"],
     ["initialize with empty list", "set a: [num] = [];"],
     ["procedure declaration", 'proc p() {print("Hello, world!");}'],
-    ["function declaration", "num f() {yeet 1;}"],
+    ["function declaration", "num f() {if(true) {yeet 1;} else {yeet 0;}}"],
     [
         "struct declaration",
         'struct S {field; num f() {yeet 1;} proc p() {print("hi!");}}',
@@ -38,7 +38,7 @@ const semanticChecks = [
     ["assign lists", "now a: [num] = [];now b: [num] = [1];a=b;b=a;"],
     ["assign to list element", "now a: [num] = [1,2,3]; a[1]=100;"],
     ["yeet", "bool f() { yeet true; }"],
-    ["yeet in nested if", "bool f() {if (true) {yeet true;}}"],
+    ["yeet in nested if", "bool f() {if (true) {yeet true;} yeet false;}"],
     ["nope in nested if", "while (false) {if (true) {nope;}}"],
     ["if", "if (true) {print(1);} else {print(3);}"],
     ["elif", "if (true) {print(1);} elif (true) {print(0);} else {print(3);}"],
@@ -104,8 +104,8 @@ const semanticErrors = [
     ],
     ["nope outside loop", "nope;", /Nope can only appear in a loop/],
     [
-        "nope inside function",
-        "while (true) {function f() {nope;}}",
+        "nope inside function/procedure",
+        "while (true) {proc f() {nope;}}",
         /Nope can only appear in a loop/,
     ],
     ["yeet outside function", "yeet 1;", /Yeet can only appear in a function/],
@@ -115,11 +115,11 @@ const semanticErrors = [
         /Yeet can only appear in a function/,
     ],
     [
-        "yeet nothing from function",
+        "function does not return",
         'num f() {print("yes");}',
-        /Functions must yeet a value/,
+        /Functions must always yeet a value/,
     ],
-    ["yeet type mismatch", "num f() {yeet false;}", /boolean to a num/],
+    ["yeet type mismatch", "num f() {yeet false;}", /bool to a num/],
     [
         "non-boolean if test",
         'if (1) {print("uh");} else {print("oh");}',
@@ -193,14 +193,14 @@ const semanticErrors = [
     [
         "parameter type mismatch",
         "proc f(num x) {print(x);}\nf(false);",
-        /Cannot assign a boolean to a num/,
+        /Cannot assign a bool to a num/,
     ],
     [
         "non-type in param",
         "now x: num=1;proc f(x y){print(1);}",
         /Type expected/,
     ],
-    ["Non-type in yeet type", "now x: num=1;x f(){yeet 1;}", /Type expected/],
+    ["non-type in return type", "now x: num=1;x f(){yeet 1;}", /Type expected/],
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general
