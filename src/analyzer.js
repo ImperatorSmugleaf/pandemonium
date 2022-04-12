@@ -447,6 +447,9 @@ class Context {
             this.analyze(s.alternate);
         }
     }
+    ElseStatement(s) {
+        this.analyze(s.body);
+    }
     WhileStatement(s) {
         this.analyze(s.test);
         checkBoolean(s.test);
@@ -493,14 +496,6 @@ class Context {
     }
     NopeStatement(n) {
         checkInLoop(this);
-    }
-    Conditional(e) {
-        this.analyze(e.test);
-        checkBoolean(e.test);
-        this.analyze(e.consequent);
-        this.analyze(e.alternate);
-        checkHaveSameType(e.consequent, e.alternate);
-        e.type = e.consequent.type;
     }
     BinaryExpression(e) {
         this.analyze(e.left);
