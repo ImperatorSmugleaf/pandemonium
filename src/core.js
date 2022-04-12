@@ -281,6 +281,7 @@ export class ProcedureType extends Type {
     // Ex. (num, [string], bool)
     constructor(paramTypes) {
         super(`(${paramTypes.map((t) => t.description).join(", ")})`);
+        Object.assign(this, { paramTypes });
     }
 }
 
