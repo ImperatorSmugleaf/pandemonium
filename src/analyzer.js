@@ -222,7 +222,7 @@ function checkMemberDeclared(field, { in: struct }) {
 }
 
 function checkInLoop(context) {
-    check(context.inLoop, "Break can only appear in a loop");
+    check(context.inLoop, "Nope can only appear in a loop");
 }
 
 function checkInFunction(context) {
@@ -434,9 +434,6 @@ class Context {
         checkAssignable(s.source, { toType: s.target.type });
         checkNotReadOnly(s.target);
     }
-    BreakStatement(s) {
-        checkInLoop(this);
-    }
     YeetStatement(s) {
         checkInFunction(this);
         this.analyze(s.argument);
@@ -493,6 +490,9 @@ class Context {
     }
     PrintStatement(s) {
         this.analyze(s.argument);
+    }
+    NopeStatement(n) {
+        checkInLoop(this);
     }
     Conditional(e) {
         this.analyze(e.test);
