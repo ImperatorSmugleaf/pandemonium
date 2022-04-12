@@ -245,7 +245,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return new core.UnaryExpression(op.ast(), operand.ast());
     },
 
-    Exp9_unary(op, operand) {
+    Exp9_unary(operand, op) {
         return new core.UnaryExpression(op.ast(), operand.ast());
     },
 
