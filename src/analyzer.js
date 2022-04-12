@@ -149,8 +149,11 @@ function checkNumeric(e) {
     checkType(e, [Type.NUM], "a number");
 }
 
-function checkNumericOrString(e) {
-    checkType(e, [Type.NUM, Type.STRING], "a number or string");
+function checkInteger(e) {
+    check(
+        Number.isInteger(e.value),
+        "Lists can only be indexed into by integers"
+    );
 }
 
 function checkBoolean(e) {
@@ -537,11 +540,17 @@ class Context {
             e.type = Type.BOOL;
         }
     }
-    SubscriptExpression(e) {
-        this.analyze(e.array);
-        e.type = e.array.type.baseType;
-        this.analyze(e.index);
-        checkInteger(e.index);
+    ListAccess(a) {
+        this.analyze(a.list);
+        a.type = a.list.type.baseType;
+        this.analyze(a.exp);
+        checkInteger(a.exp);
+    }
+    MemberAccess(a) {
+        this.analyze(a.object);
+        this.analyze(a.property);
+        checkMemberDeclared(a.property, { in: a.object });
+        a.type = a.property.type;
     }
     List(l) {
         if (l.elements.length > 0) {
