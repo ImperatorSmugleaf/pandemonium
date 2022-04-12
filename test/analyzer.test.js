@@ -14,7 +14,12 @@ const semanticChecks = [
         'set x: num = 1; now y: bool = false; set z: string = "pandemonium";',
     ],
     ["complex list types", "set x: [[[num]]] = [[[3, 2, 1], [4, 5, 6]]];"],
+    [
+        "list comparison operators",
+        "print([1] C< [1, 2, 3]); print([1, 2, 3] C= [1]); print(1 in [1]);",
+    ],
     ["increment and decrement", "now x: num = 10; x--; x++; ++x; --x;"],
+    ["unary operators", "now x: bool = false; now y: num = 1; x = !x; y = -y;"],
     ["initialize with empty list", "set a: [num] = [];"],
     ["procedure declaration", 'proc p() {print("Hello, world!");}'],
     ["function declaration", "num f() {yeet 1;}"],
@@ -56,6 +61,11 @@ const semanticChecks = [
         `num square(num x) { yeet x * x; }
          bool even(num x) { yeet x % 2 == 0; }`,
     ],
+    /* ["procs called before definition", "p(); proc p(){print(1);}"],
+    [
+        "functions called before definition",
+        "set x: num = f(); num f(){yeet 1;}",
+    ], */
     ["list parameters", "num f([num] x) {yeet 1;}"],
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
 ];
@@ -171,22 +181,22 @@ const semanticErrors = [
         /Call of non-function/,
     ],
     [
-        "Too many args",
+        "too many args",
         "proc f(num x) {print(x);}\nf(1,2);",
         /1 argument\(s\) required but 2 passed/,
     ],
     [
-        "Too few args",
+        "too few args",
         "proc f(num x) {print(x);}\nf();",
         /1 argument\(s\) required but 0 passed/,
     ],
     [
-        "Parameter type mismatch",
+        "parameter type mismatch",
         "proc f(num x) {print(x);}\nf(false);",
         /Cannot assign a boolean to a num/,
     ],
     [
-        "Non-type in param",
+        "non-type in param",
         "now x: num=1;proc f(x y){print(1);}",
         /Type expected/,
     ],
