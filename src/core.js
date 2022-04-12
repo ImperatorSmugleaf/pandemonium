@@ -103,8 +103,8 @@ export class MemberAccess {
 }
 
 export class ListAccess {
-    constructor(object, property) {
-        Object.assign(this, { object, property });
+    constructor(object, exp) {
+        Object.assign(this, { object, exp });
     }
 }
 
