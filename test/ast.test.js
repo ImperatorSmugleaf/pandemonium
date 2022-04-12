@@ -60,7 +60,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#37]
   26 | BinaryExpression op=(sym,"==") left=#27 right=(bool,"false")
   27 | BinaryExpression op=(sym,"<") left=(num,"2") right=(num,"4")
   28 | BinaryExpression op=(sym,"+") left=#29 right=#30
-  29 | UnaryExpression op=(num,"6") operand=(sym,"++")
+  29 | UnaryExpression op=(sym,"++") operand=(num,"6")
   30 | BinaryExpression op=(sym,"*") left=(num,"12") right=#31
   31 | BinaryExpression op=(sym,"^") left=(num,"10") right=#32
   32 | UnaryExpression op=(sym,"++") operand=(num,"0")
