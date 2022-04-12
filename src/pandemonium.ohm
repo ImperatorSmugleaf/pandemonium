@@ -4,7 +4,7 @@ Pandemonium {
     Statement   = Declaration                         
                 | nope ";"                                      -- nope
                 | yeet Exp ";"                                  -- yeet
-                | print "(" Exp ")" ";"                         -- print
+                | print "(" Exp ")" ";"                    -- print
                 | while "(" Exp ")" Block                       -- while
                 | ProcCall                                  
                 | ForLoop
@@ -72,7 +72,6 @@ Pandemonium {
                 | TemplateLiteral
                 | str
                 | FuncCall
-                | ListExp
                 | Variable
                 | Lambda
                 | "(" Exp ")"                                   -- grouping
