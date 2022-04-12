@@ -40,6 +40,7 @@ import {
     Procedure,
     Token,
     error,
+    ListDeclaration,
     ProcedureType,
     List,
 } from "./core.js";
@@ -402,9 +403,11 @@ class Context {
     FieldDeclaration(d) {}
     Parameter(p) {
         this.analyze(p.type);
-        if (p.type instanceof Token) p.type = p.type.value;
+        if (p.type instanceof Token) p.type = p.type.type;
+        if (p.type instanceof ListDeclaration) p.type = p.type.type;
+
         checkIsAType(p.type);
-        this.add(p.name.lexeme, p);
+        this.add(p.id.lexeme, p);
     }
     ListType(t) {
         this.analyze(t.baseType);
