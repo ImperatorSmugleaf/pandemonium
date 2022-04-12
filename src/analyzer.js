@@ -532,7 +532,8 @@ class Context {
     ListAccess(a) {
         this.analyze(a.list);
         a.type = a.list.type.baseType;
-        a.readOnly = a.list.value.readOnly;
+        a.value = a.list.value;
+        a.readOnly = a.value.readOnly;
         a.name = a.list.value.name;
         a.source = a.exp.source;
         this.analyze(a.exp);
