@@ -161,9 +161,9 @@ const semanticErrors = [
     ["bad types for negation", "print(-true);", /Expected a number/],
     ["bad types for not", 'print(!"hello");', /Expected a boolean/],
     [
-        "non-numeger index",
+        "non-integer index",
         "now a: [num]=[1];print(a[false]);",
-        /Lists can only be indexed into by integers/,
+        /List access indices must be integers/,
     ],
     [
         "diff type list elements",
