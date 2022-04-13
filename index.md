@@ -36,7 +36,7 @@ now #swag: string = "swag";                       $ Syntax error
 # Operators
 TODO: Add associativity
 | Operator | Purpose |
-| -------- | ---------- |
+|  |  |
 |   =      | Assignment |
 |   ==     | Deep Equality |
 |   !=     | Not equal to |
@@ -67,7 +67,7 @@ TODO: Add associativity
 
 # Keywords
 |  Keyword  | Meaning |
-| --------- | ------- |
+| |  |
 |   now     | Declare mutable variable |
 |   set     | Declare read-only variable |
 |   if      | Begin if statement |
