@@ -193,3 +193,21 @@ myNumbers.clear();                            $ []
 set theRealTreasure: string[] = ["The", "friends", "we", "made", "along", "the", "way"];
 theRealTreasure.clear();                $ Error: cannot modify an immutable list.
 ```
+# Semantic Errors
+Pandemonium has numerous semantic errors. They have to do with type checking, scoping rules, and ensuring that certain statements only appear where they are supposed to.
+- `Expected [TYPE]` 
+- `Type expected`
+- `List expected`
+- `List access indices must be integers`
+- `Type must be a list type`
+- `Operands do not have the same type`
+- `Not all elements have the same type`
+- `Struct and Class types must not be recursive`
+- `Cannot assign a [TYPE] to a [OTHER TYPE]`
+- `Cannot assign to constant [VAR NAME]`
+- `Fields must be distinct`
+- `Nope can only appear in a loop`
+- `Yeet can only appear in a function`
+- `Call of non-function or non-constructor`
+- `[ARG NUM] argument(s) required but [ARGS GIVEN] passed`
+- `Functions must always yeet a value`
