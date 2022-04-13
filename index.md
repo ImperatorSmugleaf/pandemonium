@@ -1,5 +1,5 @@
 # Pandemonium
-![logo](https://github.com/ImperatorSmugleaf/pandemonium/blob/ef3ec2072b69e40f8ff027ce827822a5e54d10df/pandemonium%20logo.png)
+![logo](docs/assets/images/logo.png)
 
 By: Kieran Ahn
 
