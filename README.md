@@ -117,7 +117,7 @@ for(set x: num = el; el in oneThroughFive) {
   print(x);
 }
 
-for(i = 5; i > 0; i--) {
+for(now i: num = 5; i > 0; i--) {
   print(i);
 }
 
