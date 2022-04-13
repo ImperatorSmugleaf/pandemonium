@@ -176,10 +176,7 @@ function checkNumeric(e) {
 }
 
 function checkInteger(e) {
-    check(
-        Number.isInteger(e.value),
-        "Lists can only be indexed into by integers"
-    );
+    check(Number.isInteger(e.value), "List access indices must be integers");
 }
 
 function checkBoolean(e) {
