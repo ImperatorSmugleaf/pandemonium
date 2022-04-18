@@ -207,7 +207,7 @@ function checkAllHaveSameType(expressions) {
         expressions
             .slice(1)
             .every((e) => e.type.isEquivalentTo(expressions[0].type)),
-        "Not all elements have the same type"
+        "All list elements must have the same type"
     );
 }
 
@@ -227,7 +227,7 @@ function checkAssignable(e, { toType: type }) {
 
 function checkNotReadOnly(e) {
     const readOnly = e instanceof Token ? e.value.readOnly : e.readOnly;
-    check(!readOnly, `Cannot assign to constant ${e?.lexeme ?? e.name}`, e);
+    check(!readOnly, `Cannot assign to read-only variable ${e?.lexeme ?? e.name}`, e);
 }
 
 function checkFieldsAllDistinct(fields) {
@@ -281,9 +281,7 @@ function checkFunctionCallArguments(args, calleeType) {
 }
 
 function checkAlwaysReturns(functionBody) {
-    let returns = false;
-    returns = alwaysReturns(functionBody);
-    check(returns, "Functions must always yeet a value");
+    check(alwaysReturns(functionBody), "Functions must always yeet a value");
 }
 
 function alwaysReturns(block) {
@@ -333,7 +331,7 @@ class Context {
     }
     add(name, entity) {
         // Pandemonium does not allow shadowing.
-        if (this.sees(name)) error(`Identifier ${name} already declared`);
+        if (this.sees(name)) error(`Identifier ${name} has already been declared`);
         this.locals.set(name, entity);
     }
     lookup(name) {
@@ -343,7 +341,7 @@ class Context {
         } else if (this.parent) {
             return this.parent.lookup(name);
         }
-        error(`Identifier ${name} not declared`);
+        error(`Identifier ${name} referenced before declaration`);
     }
     newChildContext(props) {
         return new Context({
