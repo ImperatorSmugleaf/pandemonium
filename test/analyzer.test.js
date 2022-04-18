@@ -75,22 +75,22 @@ const semanticErrors = [
     [
         "assignment to read-only list element",
         "set l: [num] = [1]; l[0] = 0;",
-        /Cannot assign to constant l/,
+        /Cannot assign to read-only variable l/,
     ],
     ["non-distinct fields", "struct S {x; x;}", /Fields must be distinct/],
     ["non-num increment", "now x:bool=false;x++;", /a number/],
     ["non-num decrement", "now x:bool=true;x++;", /a number/],
-    ["undeclared id", "print(x);", /Identifier x not declared/],
+    ["undeclared id", "print(x);", /Identifier x referenced before declaration/],
     [
         "redeclared id",
         "now x: num = 1;now x: num = 1;",
-        /Identifier x already declared/,
+        /Identifier x has already been declared/,
     ],
     //["recursive struct", "struct S { x: num y: S }", /must not be recursive/],
     [
         "assign to constant",
         "set x: num = 1;x = 2;",
-        /Cannot assign to constant x/,
+        /Cannot assign to read-only variable x/,
     ],
     [
         "assign bad type",
@@ -168,12 +168,12 @@ const semanticErrors = [
     [
         "diff type list elements",
         "print([3, true]);",
-        /Not all elements have the same type/,
+        /All list elements must have the same type/,
     ],
     [
         "shadowing",
         "now x: num = 1;\nwhile (true) {now x: num = 1;}",
-        /Identifier x already declared/,
+        /Identifier x has already been declared/,
     ],
     [
         "call of uncallable",
