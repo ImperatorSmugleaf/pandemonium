@@ -445,6 +445,9 @@ class Context {
         }
     }
     FieldDeclaration(d) {}
+    ObjectInstantiation(o) {
+        throw new Error("Object instantiation is not implemented yet!")
+    }
     Parameter(p) {
         this.analyze(p.type);
         p.type = this.findType(p.type);
@@ -646,6 +649,11 @@ class Context {
         this.analyze(l.params)
         this.analyze(l.body)
         l.type = l.body.type
+    }
+    TemplateLiteral(t) {
+        for(let statement of t.body) {
+            this.analyze(statement)
+        }
     }
     Token(t) {
         // For ids being used, not defined

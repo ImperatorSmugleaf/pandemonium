@@ -63,8 +63,9 @@ const semanticChecks = [
     ],
     ["list parameters", "num f([num] x) {yeet 1;}"],
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
-    ["Simple lambdas", "set z: num = (num x, num y) -> x + y;"],
-    ["Capturing lambdas", "set x: num = 1; set y: num = (num z) [x] -> x + z;"]
+    ["simple lambdas", "set z: num = (num x, num y) -> x + y;"],
+    ["capturing lambdas", "set x: num = 1; set y: num = (num z) [x] -> x + z;"],
+    ["template literals", "set x: num = 3; set y: num = -1; print(`1 + 1 = #{x + y}!`);"]
 ];
 
 // Programs that are syntactically correct but have semantic errors
@@ -205,7 +206,8 @@ const semanticErrors = [
         /Identifier f referenced before declaration/,
     ],
     ["bad lambda types", "set x: num = (bool y) -> y + 1;", /Expected a number/],
-    ["lambda captures variable before declaration", "set x: num = (num y) [z] -> y + z;", /Identifier z referenced before declaration/]
+    ["lambda captures variable before declaration", "set x: num = (num y) [z] -> y + z;", /Identifier z referenced before declaration/],
+    ["object instantiation", "struct S {x;} set y: S = new S();", /Object instantiation is not implemented yet!/]
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general
