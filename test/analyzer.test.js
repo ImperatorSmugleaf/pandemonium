@@ -61,11 +61,6 @@ const semanticChecks = [
         `num square(num x) { yeet x * x; }
          bool even(num x) { yeet x % 2 == 0; }`,
     ],
-    /* ["procs called before definition", "p(); proc p(){print(1);}"],
-    [
-        "functions called before definition",
-        "set x: num = f(); num f(){yeet 1;}",
-    ], */
     ["list parameters", "num f([num] x) {yeet 1;}"],
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
 ];
@@ -86,7 +81,7 @@ const semanticErrors = [
         "now x: num = 1;now x: num = 1;",
         /Identifier x has already been declared/,
     ],
-    //["recursive struct", "struct S { x: num y: S }", /must not be recursive/],
+    ["recursive struct", "struct S { set x: S = new S(); }", /must not be recursive/],
     [
         "assign to constant",
         "set x: num = 1;x = 2;",
@@ -126,11 +121,11 @@ const semanticErrors = [
         /Expected a bool/,
     ],
     ["non-boolean while test", "while (1) {print(1);}", /Expected a bool/],
-    /* [
+    [
         "non-list in for",
-        'for (set x: num = i; i in 100) {print("Looping!");}',
+        'set notAList: num = 1; for (set x: num = i; i in notAList) {print("Looping!");}',
         /List expected/,
-    ], */
+    ],
     [
         "non-boolean conditional test",
         'if(1) {print("Error!");}',
@@ -201,6 +196,12 @@ const semanticErrors = [
         /Type expected/,
     ],
     ["non-type in return type", "now x: num=1;x f(){yeet 1;}", /Type expected/],
+    ["procs called before definition", "p(); proc p(){print(1);}", /Identifier p referenced before declaration/],
+    [
+        "functions called before definition",
+        "set x: num = f(); num f(){yeet 1;}",
+        /Identifier f referenced before declaration/,
+    ],
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general
