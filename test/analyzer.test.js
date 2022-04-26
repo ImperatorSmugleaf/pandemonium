@@ -63,6 +63,8 @@ const semanticChecks = [
     ],
     ["list parameters", "num f([num] x) {yeet 1;}"],
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
+    ["Simple lambdas", "set z: num = (num x, num y) -> x + y;"],
+    ["Capturing lambdas", "set x: num = 1; set y: num = (num z) [x] -> x + z;"]
 ];
 
 // Programs that are syntactically correct but have semantic errors
@@ -81,7 +83,7 @@ const semanticErrors = [
         "now x: num = 1;now x: num = 1;",
         /Identifier x has already been declared/,
     ],
-    ["recursive struct", "struct S { set x: S = new S(); }", /must not be recursive/],
+    // ["recursive struct", "struct S { set x: S = new S(); }", /must not be recursive/],
     [
         "assign to constant",
         "set x: num = 1;x = 2;",
@@ -202,6 +204,8 @@ const semanticErrors = [
         "set x: num = f(); num f(){yeet 1;}",
         /Identifier f referenced before declaration/,
     ],
+    ["bad lambda types", "set x: num = (bool y) -> y + 1;", /Expected a number/],
+    ["lambda captures variable before declaration", "set x: num = (num y) [z] -> y + z;", /Identifier z referenced before declaration/]
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general

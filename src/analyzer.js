@@ -639,6 +639,14 @@ class Context {
         } */
         checkFunctionCallArguments(c.args, callee.type);
     }
+    LambdaExpression(l) {
+        if(l.captures !== null){
+            this.analyze(l.captures)
+        }
+        this.analyze(l.params)
+        this.analyze(l.body)
+        l.type = l.body.type
+    }
     Token(t) {
         // For ids being used, not defined
         if (t.category === "id") {
