@@ -19,6 +19,7 @@ Pandemonium {
                 | "<-" Variable                                 -- unpacking
                 | ListExp
                 | id
+                | this
     Declaration = Vardec | Subrtdec | StructDec | ClassDec
     Vardec      = now VarDecId ":" Type "=" Exp ";"             -- mutable
                 | set VarDecId ":" Type "=" Exp ";"	            -- immutable
