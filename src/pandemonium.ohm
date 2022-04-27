@@ -44,7 +44,7 @@ Pandemonium {
     ThenElse    = else Block
     StructDec   = struct id ObjectBody
     ClassDec    = class id ObjectBody
-    ObjectBody  = "{" (VisibilityLabel | InstanceField | Subrtdec)+ "}"
+    ObjectBody  = "{" (VisibilityLabel | InstanceField | Declaration)+ "}"
     VisibilityLabel = (public | private) ":"
     InstanceField = id ";"
 
@@ -89,8 +89,8 @@ Pandemonium {
     VarDecId    = this "." id                                   -- instance
                 | id
 
-    Lambda      = "(" Params ")" "->" (Exp | Block)             -- base
-                | "(" Params ")" "[" Captures "]" "->" (Exp | Block)    -- capturing
+    Lambda      = "(" Params ")" "->" Exp                       -- base
+                | "(" Params ")" "[" Captures "]" "->" Exp      -- capturing
     
     Params      = ListOf<Param, ",">
     Args        = ListOf<Exp, ",">

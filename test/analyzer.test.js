@@ -61,13 +61,11 @@ const semanticChecks = [
         `num square(num x) { yeet x * x; }
          bool even(num x) { yeet x % 2 == 0; }`,
     ],
-    /* ["procs called before definition", "p(); proc p(){print(1);}"],
-    [
-        "functions called before definition",
-        "set x: num = f(); num f(){yeet 1;}",
-    ], */
     ["list parameters", "num f([num] x) {yeet 1;}"],
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
+    ["simple lambdas", "set z: num = (num x, num y) -> x + y;"],
+    ["capturing lambdas", "set x: num = 1; set y: num = (num z) [x] -> x + z;"],
+    ["template literals", "set x: num = 3; set y: num = -1; print(`1 + 1 = #{x + y}!`);"]
 ];
 
 // Programs that are syntactically correct but have semantic errors
@@ -75,22 +73,22 @@ const semanticErrors = [
     [
         "assignment to read-only list element",
         "set l: [num] = [1]; l[0] = 0;",
-        /Cannot assign to constant l/,
+        /Cannot assign to read-only variable l/,
     ],
     ["non-distinct fields", "struct S {x; x;}", /Fields must be distinct/],
     ["non-num increment", "now x:bool=false;x++;", /a number/],
     ["non-num decrement", "now x:bool=true;x++;", /a number/],
-    ["undeclared id", "print(x);", /Identifier x not declared/],
+    ["undeclared id", "print(x);", /Identifier x referenced before declaration/],
     [
         "redeclared id",
         "now x: num = 1;now x: num = 1;",
-        /Identifier x already declared/,
+        /Identifier x has already been declared/,
     ],
-    //["recursive struct", "struct S { x: num y: S }", /must not be recursive/],
+    // ["recursive struct", "struct S { set x: S = new S(); }", /must not be recursive/],
     [
         "assign to constant",
         "set x: num = 1;x = 2;",
-        /Cannot assign to constant x/,
+        /Cannot assign to read-only variable x/,
     ],
     [
         "assign bad type",
@@ -126,11 +124,11 @@ const semanticErrors = [
         /Expected a bool/,
     ],
     ["non-boolean while test", "while (1) {print(1);}", /Expected a bool/],
-    /* [
+    [
         "non-list in for",
-        'for (set x: num = i; i in 100) {print("Looping!");}',
+        'set notAList: num = 1; for (set x: num = i; i in notAList) {print("Looping!");}',
         /List expected/,
-    ], */
+    ],
     [
         "non-boolean conditional test",
         'if(1) {print("Error!");}',
@@ -168,12 +166,12 @@ const semanticErrors = [
     [
         "diff type list elements",
         "print([3, true]);",
-        /Not all elements have the same type/,
+        /All list elements must have the same type/,
     ],
     [
         "shadowing",
         "now x: num = 1;\nwhile (true) {now x: num = 1;}",
-        /Identifier x already declared/,
+        /Identifier x has already been declared/,
     ],
     [
         "call of uncallable",
@@ -201,6 +199,15 @@ const semanticErrors = [
         /Type expected/,
     ],
     ["non-type in return type", "now x: num=1;x f(){yeet 1;}", /Type expected/],
+    ["procs called before definition", "p(); proc p(){print(1);}", /Identifier p referenced before declaration/],
+    [
+        "functions called before definition",
+        "set x: num = f(); num f(){yeet 1;}",
+        /Identifier f referenced before declaration/,
+    ],
+    ["bad lambda types", "set x: num = (bool y) -> y + 1;", /Expected a number/],
+    ["lambda captures variable before declaration", "set x: num = (num y) [z] -> y + z;", /Identifier z referenced before declaration/],
+    ["object instantiation", "struct S {x;} set y: S = new S();", /Object instantiation is not implemented yet!/]
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general
