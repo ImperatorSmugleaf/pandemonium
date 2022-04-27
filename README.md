@@ -93,7 +93,7 @@ proc sayHello() {
 Lambda expressions are functions, as they must always return a value. Since they can only be used in expressions, their function signatures do not need to be declared explicitly, since they are implied to match that of the variables to which they are being bound.
 ```
 now x: num = 0;
-now xSquared: num = () [x] -> {x ^ 2};    
+now xSquared: num = () [x] -> x ^ 2;    
 $ Variables bound to lambda expressions containing variables must always be mutable, since they may change over time.
 $ Lambdas that wish to use pre-defined variables must capture them in the capture clause.
 ```
