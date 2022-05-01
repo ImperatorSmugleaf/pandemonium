@@ -28,7 +28,7 @@ describe("The compiler", () => {
         done();
     });
     it("throws if given an unimplemented option", (done) => {
-        assert.throws(() => compile(sampleProgram, "js"));
+        assert.throws(() => compile(sampleProgram, "pirate"));
         done();
     });
 });

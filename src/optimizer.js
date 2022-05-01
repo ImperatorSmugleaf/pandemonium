@@ -32,6 +32,10 @@ const optimizers = {
         p.statements = optimize(p.statements);
         return p;
     },
+    Block(b) {
+        b.statements = optimize(b.statements);
+        return b;
+    },
     VariableDeclaration(d) {
         d.variable = optimize(d.variable);
         d.initializer = optimize(d.initializer);
@@ -88,11 +92,8 @@ const optimizers = {
     BreakStatement(s) {
         return s;
     },
-    ReturnStatement(s) {
+    YeetStatement(s) {
         s.expression = optimize(s.expression);
-        return s;
-    },
-    ShortReturnStatement(s) {
         return s;
     },
     IfStatement(s) {
@@ -152,6 +153,9 @@ const optimizers = {
         if (s.collection.constructor === core.EmptyArray) {
             return [];
         }
+        return s;
+    },
+    NopeStatement(s) {
         return s;
     },
     Conditional(e) {
@@ -228,9 +232,6 @@ const optimizers = {
     },
     ArrayExpression(e) {
         e.elements = optimize(e.elements);
-        return e;
-    },
-    EmptyArray(e) {
         return e;
     },
     MemberExpression(e) {

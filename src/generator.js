@@ -48,6 +48,9 @@ export default function generate(program) {
         Program(p) {
             gen(p.statements);
         },
+        Block(b) {
+            gen(b.statements);
+        },
         VariableDeclaration(d) {
             // We don't care about const vs. let in the generated code! The analyzer has
             // already checked that we never updated a const, so let is always fine.
@@ -103,7 +106,7 @@ export default function generate(program) {
         PrintStatement(s) {
             output.push(`console.log(${gen(s.argument)});`);
         },
-        BreakStatement(s) {
+        NopeStatement(s) {
             output.push("break;");
         },
         ReturnStatement(s) {

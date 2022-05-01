@@ -227,7 +227,11 @@ function checkAssignable(e, { toType: type }) {
 
 function checkNotReadOnly(e) {
     const readOnly = e instanceof Token ? e.value.readOnly : e.readOnly;
-    check(!readOnly, `Cannot assign to read-only variable ${e?.lexeme ?? e.name}`, e);
+    check(
+        !readOnly,
+        `Cannot assign to read-only variable ${e?.lexeme ?? e.name}`,
+        e
+    );
 }
 
 function checkFieldsAllDistinct(fields) {
@@ -331,7 +335,8 @@ class Context {
     }
     add(name, entity) {
         // Pandemonium does not allow shadowing.
-        if (this.sees(name)) error(`Identifier ${name} has already been declared`);
+        if (this.sees(name))
+            error(`Identifier ${name} has already been declared`);
         this.locals.set(name, entity);
     }
     lookup(name) {
@@ -380,6 +385,7 @@ class Context {
         }
 
         d.id.value = new Variable(d.id.lexeme, d.type, d.readOnly);
+        d.variable = d.id.value;
         this.add(d.id.lexeme, d.id.value);
     }
     FunctionDeclaration(d) {
@@ -446,7 +452,7 @@ class Context {
     }
     FieldDeclaration(d) {}
     ObjectInstantiation(o) {
-        throw new Error("Object instantiation is not implemented yet!")
+        throw new Error("Object instantiation is not implemented yet!");
     }
     Parameter(p) {
         this.analyze(p.type);
@@ -643,16 +649,16 @@ class Context {
         checkFunctionCallArguments(c.args, callee.type);
     }
     LambdaExpression(l) {
-        if(l.captures !== null){
-            this.analyze(l.captures)
+        if (l.captures !== null) {
+            this.analyze(l.captures);
         }
-        this.analyze(l.params)
-        this.analyze(l.body)
-        l.type = l.body.type
+        this.analyze(l.params);
+        this.analyze(l.body);
+        l.type = l.body.type;
     }
     TemplateLiteral(t) {
-        for(let statement of t.body) {
-            this.analyze(statement)
+        for (let statement of t.body) {
+            this.analyze(statement);
         }
     }
     Token(t) {
