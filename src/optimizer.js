@@ -33,6 +33,12 @@ const optimizers = {
         return p;
     },
     Block(b) {
+        const nopeIndex = b.statements.findIndex(
+            (statement) => statement instanceof core.NopeStatement
+        );
+        if (nopeIndex != -1) {
+            b.statements = b.statements.slice(0, nopeIndex + 1);
+        }
         b.statements = optimize(b.statements);
         return b;
     },
@@ -41,20 +47,26 @@ const optimizers = {
         d.initializer = optimize(d.initializer);
         return d;
     },
-    TypeDeclaration(d) {
+    /* TypeDeclaration(d) {
         d.type = optimize(d.type);
         return d;
-    },
-    Field(f) {
+    }, */
+    /* Field(f) {
         f.name = f.name.lexeme;
         return f;
-    },
-    StructType(d) {
+    }, */
+    /* StructType(d) {
         d.fields = optimize(d.fields);
         return d;
-    },
+    }, */
     FunctionDeclaration(d) {
-        d.fun = optimize(d.fun);
+        d.func = optimize(d.func);
+        d.parameters = optimize(d.parameters);
+        if (d.body) d.body = optimize(d.body);
+        return d;
+    },
+    ProcedureDeclaration(d) {
+        d.proc = optimize(d.proc);
         d.parameters = optimize(d.parameters);
         if (d.body) d.body = optimize(d.body);
         return d;
@@ -65,8 +77,11 @@ const optimizers = {
     Function(f) {
         return f;
     },
+    Procedure(p) {
+        return p;
+    },
     Parameter(p) {
-        p.name = optimize(p.name);
+        p.name = optimize(p.id);
         return p;
     },
     Increment(s) {
@@ -82,6 +97,10 @@ const optimizers = {
         s.target = optimize(s.target);
         if (s.source === s.target) {
             return [];
+        } else if (s.operator === "+=" && s.source === 1) {
+            return new core.Increment(s.target);
+        } else if (s.operator === "-=" && s.source === 1) {
+            return new core.Decrement(s.target);
         }
         return s;
     },
@@ -89,27 +108,16 @@ const optimizers = {
         s.argument = optimize(s.argument);
         return s;
     },
-    BreakStatement(s) {
-        return s;
-    },
     YeetStatement(s) {
-        s.expression = optimize(s.expression);
+        s.argument = optimize(s.argument);
         return s;
     },
-    IfStatement(s) {
+    ConditionalStatement(s) {
         s.test = optimize(s.test);
         s.consequent = optimize(s.consequent);
-        s.alternate = optimize(s.alternate);
+        s.alternate = s.alternate !== null ? optimize(s.alternate) : [];
         if (s.test.constructor === Boolean) {
             return s.test ? s.consequent : s.alternate;
-        }
-        return s;
-    },
-    ShortIfStatement(s) {
-        s.test = optimize(s.test);
-        s.consequent = optimize(s.consequent);
-        if (s.test.constructor === Boolean) {
-            return s.test ? s.consequent : [];
         }
         return s;
     },
@@ -122,35 +130,19 @@ const optimizers = {
         s.body = optimize(s.body);
         return s;
     },
-    RepeatStatement(s) {
-        s.count = optimize(s.count);
-        if (s.count === 0) {
-            // repeat 0 times is a no-op
-            return [];
-        }
+    IncrementalForStatement(s) {
+        s.declaration = optimize(s.declaration);
+        s.test = optimize(s.test);
+        s.increment = optimize(s.increment);
         s.body = optimize(s.body);
         return s;
     },
-    ForRangeStatement(s) {
+    ElementwiseForStatement(s) {
+        s.productionDec = optimize(s.productionDec);
         s.iterator = optimize(s.iterator);
-        s.low = optimize(s.low);
-        s.op = optimize(s.op);
-        s.high = optimize(s.high);
+        s.source = optimize(s.source);
         s.body = optimize(s.body);
-        if (s.low.constructor === Number) {
-            if (s.high.constructor === Number) {
-                if (s.low > s.high) {
-                    return [];
-                }
-            }
-        }
-        return s;
-    },
-    ForStatement(s) {
-        s.iterator = optimize(s.iterator);
-        s.collection = optimize(s.collection);
-        s.body = optimize(s.body);
-        if (s.collection.constructor === core.EmptyArray) {
+        if (s.source.elements.length === 0) {
             return [];
         }
         return s;
@@ -158,31 +150,19 @@ const optimizers = {
     NopeStatement(s) {
         return s;
     },
-    Conditional(e) {
-        e.test = optimize(e.test);
-        e.consequent = optimize(e.consequent);
-        e.alternate = optimize(e.alternate);
-        if (e.test.constructor === Boolean) {
-            return e.test ? e.consequent : e.alternate;
-        }
-        return e;
-    },
     BinaryExpression(e) {
         e.op = optimize(e.op);
         e.left = optimize(e.left);
         e.right = optimize(e.right);
-        if (e.op === "??") {
-            // Coalesce Empty Optional Unwraps
-            if (e.left.constructor === core.EmptyOptional) {
-                return e.right;
-            }
-        } else if (e.op === "&&") {
+        if (e.op === "and") {
             // Optimize boolean constants in && and ||
             if (e.left === true) return e.right;
             else if (e.right === true) return e.left;
-        } else if (e.op === "||") {
+            else if (e.left === false || e.right === false) return false;
+        } else if (e.op === "or") {
             if (e.left === false) return e.right;
             else if (e.right === false) return e.left;
+            else if (e.left === true || e.right === true) return true;
         } else if ([Number, BigInt].includes(e.left.constructor)) {
             // Numeric constant folding when left operand is constant
             if ([Number, BigInt].includes(e.right.constructor)) {
@@ -190,25 +170,28 @@ const optimizers = {
                 else if (e.op === "-") return e.left - e.right;
                 else if (e.op === "*") return e.left * e.right;
                 else if (e.op === "/") return e.left / e.right;
-                else if (e.op === "**") return e.left ** e.right;
+                else if (e.op === "//") return Math.floor(e.left / e.right);
+                else if (e.op === "^") return e.left ** e.right;
                 else if (e.op === "<") return e.left < e.right;
                 else if (e.op === "<=") return e.left <= e.right;
                 else if (e.op === "==") return e.left === e.right;
+                else if (e.op === "is") return e.left === e.right;
                 else if (e.op === "!=") return e.left !== e.right;
                 else if (e.op === ">=") return e.left >= e.right;
                 else if (e.op === ">") return e.left > e.right;
+                else if (e.op === "%") return e.left % e.right;
             } else if (e.left === 0 && e.op === "+") return e.right;
             else if (e.left === 1 && e.op === "*") return e.right;
             else if (e.left === 0 && e.op === "-")
                 return new core.UnaryExpression("-", e.right);
-            else if (e.left === 1 && e.op === "**") return 1;
+            else if (e.left === 1 && e.op === "^") return 1;
             else if (e.left === 0 && ["*", "/"].includes(e.op)) return 0;
         } else if (e.right.constructor === Number) {
             // Numeric constant folding when right operand is constant
             if (["+", "-"].includes(e.op) && e.right === 0) return e.left;
             else if (["*", "/"].includes(e.op) && e.right === 1) return e.left;
             else if (e.op === "*" && e.right === 0) return 0;
-            else if (e.op === "**" && e.right === 0) return 1;
+            else if (e.op === "^" && e.right === 0) return 1;
         }
         return e;
     },
@@ -216,29 +199,31 @@ const optimizers = {
         e.op = optimize(e.op);
         e.operand = optimize(e.operand);
         if (e.operand.constructor === Number) {
-            if (e.op === "-") {
-                return -e.operand;
-            }
+            if (e.op === "-") return -e.operand;
+        } else if (e.operand.constructor === Boolean) {
+            if (e.op === "!") return !e.operand;
         }
         return e;
     },
-    EmptyOptional(e) {
+    ListAccess(e) {
+        e.list = optimize(e.list);
+        e.exp = optimize(e.exp);
         return e;
     },
-    SubscriptExpression(e) {
-        e.array = optimize(e.array);
-        e.index = optimize(e.index);
-        return e;
-    },
-    ArrayExpression(e) {
+    List(e) {
         e.elements = optimize(e.elements);
         return e;
     },
-    MemberExpression(e) {
+    /* MemberAccess(e) {
         e.object = optimize(e.object);
         return e;
+    }, */
+    FunctionCall(c) {
+        c.callee = optimize(c.callee);
+        c.args = optimize(c.args);
+        return c;
     },
-    Call(c) {
+    ProcedureCall(c) {
         c.callee = optimize(c.callee);
         c.args = optimize(c.args);
         return c;
@@ -259,6 +244,7 @@ const optimizers = {
         // All tokens get optimized away and basically replace with either their
         // value (obtained by the analyzer for literals and ids) or simply with
         // lexeme (if a plain symbol like an operator)
+        /* c8 ignore next */
         return t.value ?? t.lexeme;
     },
     Array(a) {
