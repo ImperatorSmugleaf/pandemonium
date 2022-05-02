@@ -80,15 +80,15 @@ const expected = `   1 | Program statements=[#2,#5,#6,#61,#68,#74]
   21 | FunctionCall callee=(id,"cube") args=[(id,"count")]
   22 | Assignment target=(id,"count") operator=(sym,"=") source=#23
   23 | BinaryExpression op=(sym,"or") left=#24 right=#25
-  24 | UnaryExpression op=(sym,"!") operand=(num,"124.623E-12")
+  24 | UnaryExpression op=(sym,"!") operand=(num,"124.623E-12") postfix=false
   25 | BinaryExpression op=(sym,"and") left=#26 right=#28
   26 | BinaryExpression op=(sym,"==") left=#27 right=(bool,"false")
   27 | BinaryExpression op=(sym,"<") left=(num,"2") right=(num,"4")
   28 | BinaryExpression op=(sym,"+") left=#29 right=#30
-  29 | UnaryExpression op=(sym,"++") operand=(num,"6")
+  29 | UnaryExpression op=(sym,"++") operand=(num,"6") postfix=true
   30 | BinaryExpression op=(sym,"*") left=(num,"12") right=#31
   31 | BinaryExpression op=(sym,"^") left=(num,"10") right=#32
-  32 | UnaryExpression op=(sym,"++") operand=(num,"0")
+  32 | UnaryExpression op=(sym,"++") operand=(num,"0") postfix=false
   33 | PrintStatement argument=#34
   34 | FunctionCall callee=#35 args=[]
   35 | MemberAccess object=(id,"oneThroughFive") property=(id,"pop")
@@ -113,7 +113,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#61,#68,#74]
   54 | VariableDeclaration id=(id,"i") type=(sym,"num") initializer=(num,"0") readOnly=true
   55 | BinaryExpression op=(sym,"<") left=(id,"i") right=(num,"5")
   56 | LambdaExpression params=[] body=#57 captures=[(id,"i")]
-  57 | UnaryExpression op=(sym,"++") operand=(id,"i")
+  57 | UnaryExpression op=(sym,"++") operand=(id,"i") postfix=true
   58 | Block statements=[#59]
   59 | Assignment target=#60 operator=(sym,"=") source=(id,"i")
   60 | ListAccess list=(id,"oneThroughFive") exp=(id,"i")
@@ -135,7 +135,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#61,#68,#74]
   76 | PrintStatement argument=#77
   77 | TemplateLiteral body=[(string,"That's all, folks! The final answer is:"),(id,"oneThroughFive")]
   78 | ConditionalStatement test=#79 consequent=#80 alternate=#83
-  79 | UnaryExpression op=(sym,"!") operand=(id,"done")
+  79 | UnaryExpression op=(sym,"!") operand=(id,"done") postfix=false
   80 | Block statements=[#81]
   81 | VariableDeclaration id=#82 type=(sym,"bool") initializer=(bool,"true") readOnly=true
   82 | MemberAccess object=(sym,"this") property=(id,"panic")
