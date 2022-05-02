@@ -15,7 +15,7 @@ proc main([string] args) {
     count += 10;
     count -= 5;
     count = cube(count);
-    count = !(124.623E-12) || ((2 < 4) == false && 6++ + 12 * 10 ^ ++0 );	$ Syntax error: expression is boolean, but variable is num
+    count = !(124.623E-12) or ((2 < 4) == false && 6++ + 12 * 10 ^ ++0 );	$ Syntax error: expression is boolean, but variable is num
     print(oneThroughFive.pop());
     success();
 }
