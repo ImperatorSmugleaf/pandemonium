@@ -135,8 +135,8 @@ export class BinaryExpression {
 }
 
 export class UnaryExpression {
-    constructor(op, operand) {
-        Object.assign(this, { op, operand });
+    constructor(op, operand, postfix = false) {
+        Object.assign(this, { op, operand, postfix });
     }
 }
 
