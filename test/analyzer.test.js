@@ -65,7 +65,10 @@ const semanticChecks = [
     ["outer variable", "set x: num = 1; while(false) {print(x);}"],
     ["simple lambdas", "set z: num = (num x, num y) -> x + y;"],
     ["capturing lambdas", "set x: num = 1; set y: num = (num z) [x] -> x + z;"],
-    ["template literals", "set x: num = 3; set y: num = -1; print(`1 + 1 = #{x + y}!`);"]
+    [
+        "template literals",
+        "set x: num = 3; set y: num = -1; print(`1 + 1 = #{x + y}!`);",
+    ],
 ];
 
 // Programs that are syntactically correct but have semantic errors
@@ -78,7 +81,11 @@ const semanticErrors = [
     ["non-distinct fields", "struct S {x; x;}", /Fields must be distinct/],
     ["non-num increment", "now x:bool=false;x++;", /a number/],
     ["non-num decrement", "now x:bool=true;x++;", /a number/],
-    ["undeclared id", "print(x);", /Identifier x referenced before declaration/],
+    [
+        "undeclared id",
+        "print(x);",
+        /Identifier x referenced before declaration/,
+    ],
     [
         "redeclared id",
         "now x: num = 1;now x: num = 1;",
@@ -159,6 +166,16 @@ const semanticErrors = [
     ["bad types for negation", "print(-true);", /Expected a number/],
     ["bad types for not", 'print(!"hello");', /Expected a boolean/],
     [
+        "expression increment of non-variable",
+        "print(9++);",
+        /Only variables can be incremented/,
+    ],
+    [
+        "expression incremenet of read-only variable",
+        "set x: num = 0; print(x++);",
+        /Cannot assign to read-only variable x/,
+    ],
+    [
         "non-integer index",
         "now a: [num]=[1];print(a[false]);",
         /List access indices must be integers/,
@@ -199,15 +216,31 @@ const semanticErrors = [
         /Type expected/,
     ],
     ["non-type in return type", "now x: num=1;x f(){yeet 1;}", /Type expected/],
-    ["procs called before definition", "p(); proc p(){print(1);}", /Identifier p referenced before declaration/],
+    [
+        "procs called before definition",
+        "p(); proc p(){print(1);}",
+        /Identifier p referenced before declaration/,
+    ],
     [
         "functions called before definition",
         "set x: num = f(); num f(){yeet 1;}",
         /Identifier f referenced before declaration/,
     ],
-    ["bad lambda types", "set x: num = (bool y) -> y + 1;", /Expected a number/],
-    ["lambda captures variable before declaration", "set x: num = (num y) [z] -> y + z;", /Identifier z referenced before declaration/],
-    ["object instantiation", "struct S {x;} set y: S = new S();", /Object instantiation is not implemented yet!/]
+    [
+        "bad lambda types",
+        "set x: num = (bool y) -> y + 1;",
+        /Expected a number/,
+    ],
+    [
+        "lambda captures variable before declaration",
+        "set x: num = (num y) [z] -> y + z;",
+        /Identifier z referenced before declaration/,
+    ],
+    [
+        "object instantiation",
+        "struct S {x;} set y: S = new S();",
+        /Object instantiation is not implemented yet!/,
+    ],
 ];
 
 // Test cases for expected semantic graphs after processing the AST. In general
