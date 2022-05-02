@@ -27,8 +27,9 @@ describe("The compiler", () => {
         assert(util.format(compiled).startsWith("   1 | Program"));
         done();
     });
-    it("throws if given an unimplemented option", (done) => {
-        assert.throws(() => compile(sampleProgram, "pirate"));
+    it("accepts the optimized option", (done) => {
+        const compiled = compile(sampleProgram, "optimized");
+        assert(util.format(compiled).startsWith("   1 | Program"));
         done();
     });
 });
