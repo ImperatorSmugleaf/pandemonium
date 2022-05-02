@@ -410,6 +410,8 @@ class Context {
         this.add(d.name.lexeme, d.name.value);
         childContext.analyze(d.body);
         checkAlwaysReturns(d.body);
+        d.func = d.name.value;
+        d.func.body = d.body;
     }
     ProcedureDeclaration(d) {
         d.name.value = new Procedure(d.name.lexeme);
@@ -424,6 +426,8 @@ class Context {
         );
         this.add(d.name.lexeme, d.name.value);
         childContext.analyze(d.body);
+        d.proc = d.name.value;
+        d.proc.body = d.body;
     }
     ListDeclaration(l) {
         this.analyze(l.type);
@@ -476,6 +480,7 @@ class Context {
         this.analyze(s.variable);
         checkNotReadOnly(s.variable);
         checkNumeric(s.variable);
+        s.type = s.variable.type;
     }
     Decrement(s) {
         this.analyze(s.variable);
@@ -578,12 +583,19 @@ class Context {
     }
     UnaryExpression(e) {
         this.analyze(e.operand);
-        if (["-", "++", "--"].includes(e.op.lexeme)) {
+        if (["--", "++"].includes(e.op.lexeme)) {
+            if (!(e.operand.category === "id")) {
+                throw new Error("Only variables can be incremented");
+            }
             checkNumeric(e.operand);
+            checkNotReadOnly(e.operand);
             e.type = Type.NUM;
         } else if (e.op.lexeme === "!") {
             checkBoolean(e.operand);
             e.type = Type.BOOL;
+        } else if (e.op.lexeme === "-") {
+            checkNumeric(e.operand);
+            e.type = Type.NUM;
         }
     }
     ListAccess(a) {
