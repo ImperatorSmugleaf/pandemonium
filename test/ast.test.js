@@ -133,7 +133,7 @@ const expected = `   1 | Program statements=[#2,#5,#6,#61,#68,#74]
   74 | ConditionalStatement test=(id,"done") consequent=#75 alternate=#78
   75 | Block statements=[#76]
   76 | PrintStatement argument=#77
-  77 | TemplateLiteral body=[(string,"That's all, folks! The final answer is:"),(id,"oneThroughFive")]
+  77 | TemplateLiteral body=[(string,"That's all, folks! The final answer is: "),(id,"oneThroughFive")]
   78 | ConditionalStatement test=#79 consequent=#80 alternate=#83
   79 | UnaryExpression op=(sym,"!") operand=(id,"done") postfix=false
   80 | Block statements=[#81]
