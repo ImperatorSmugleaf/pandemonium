@@ -3,7 +3,7 @@
 // Invoke generate(program) with the program node to get back the JavaScript
 // translation as a string.
 
-import { Type, StructType } from "./core.js";
+import { Type, StructType, ConditionalStatement } from "./core.js";
 import * as stdlib from "./stdlib.js";
 
 export default function generate(program) {
@@ -32,9 +32,7 @@ export default function generate(program) {
             if (!mapping.has(entity)) {
                 mapping.set(entity, mapping.size + 1);
             }
-            return `${entity.name ?? entity.description}_${mapping.get(
-                entity
-            )}`;
+            return `${entity.name}_${mapping.get(entity)}`;
         };
     })(new Map());
 
@@ -56,7 +54,7 @@ export default function generate(program) {
             // already checked that we never updated a const, so let is always fine.
             output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
         },
-        TypeDeclaration(d) {
+        /* TypeDeclaration(d) {
             // The only type declaration in Pandemonium is the struct! Becomes a JS class.
             output.push(`class ${gen(d.type)} {`);
             output.push(`constructor(${gen(d.type.fields).join(",")}) {`);
@@ -73,10 +71,21 @@ export default function generate(program) {
         },
         Field(f) {
             return targetName(f);
-        },
+        }, */
         FunctionDeclaration(d) {
             output.push(
-                `function ${gen(d.fun)}(${gen(d.fun.parameters).join(", ")}) {`
+                `function ${gen(d.func)}(${gen(d.func.parameters).join(
+                    ", "
+                )}) {`
+            );
+            gen(d.body);
+            output.push("}");
+        },
+        ProcedureDeclaration(d) {
+            output.push(
+                `function ${gen(d.proc)}(${gen(d.proc.parameters).join(
+                    ", "
+                )}) {`
             );
             gen(d.body);
             output.push("}");
@@ -94,6 +103,9 @@ export default function generate(program) {
         Function(f) {
             return targetName(f);
         },
+        Procedure(p) {
+            return targetName(p);
+        },
         Increment(s) {
             output.push(`${gen(s.variable)}++;`);
         },
@@ -109,111 +121,84 @@ export default function generate(program) {
         NopeStatement(s) {
             output.push("break;");
         },
-        ReturnStatement(s) {
-            output.push(`return ${gen(s.expression)};`);
+        YeetStatement(s) {
+            output.push(`return ${gen(s.argument)};`);
         },
-        ShortReturnStatement(s) {
-            output.push("return;");
-        },
-        IfStatement(s) {
+        ConditionalStatement(s) {
             output.push(`if (${gen(s.test)}) {`);
             gen(s.consequent);
-            if (s.alternate.constructor === IfStatement) {
-                output.push("} else");
-                gen(s.alternate);
+            if (s.alternate !== null) {
+                if (s.alternate.constructor === ConditionalStatement) {
+                    output.push("} else");
+                    gen(s.alternate);
+                } else {
+                    output.push("} else {");
+                    gen(s.alternate);
+                    output.push("}");
+                }
             } else {
-                output.push("} else {");
-                gen(s.alternate);
                 output.push("}");
             }
         },
-        ShortIfStatement(s) {
-            output.push(`if (${gen(s.test)}) {`);
-            gen(s.consequent);
-            output.push("}");
+        ElseStatement(s) {
+            gen(s.body);
         },
         WhileStatement(s) {
             output.push(`while (${gen(s.test)}) {`);
             gen(s.body);
             output.push("}");
         },
-        RepeatStatement(s) {
-            // JS can only repeat n times if you give it a counter variable!
-            const i = targetName({ name: "i" });
-            output.push(`for (let ${i} = 0; ${i} < ${gen(s.count)}; ${i}++) {`);
-            gen(s.body);
-            output.push("}");
-        },
-        ForRangeStatement(s) {
-            const i = targetName(s.iterator);
-            const op = s.op === "..." ? "<=" : "<";
+        IncrementalForStatement(s) {
+            const i = targetName(s.declaration.variable);
             output.push(
-                `for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(
-                    s.high
-                )}; ${i}++) {`
+                `for (let ${i} = ${gen(s.declaration.initializer)}; ${gen(
+                    s.test
+                )}; ${gen(s.increment)}) {`
             );
             gen(s.body);
             output.push("}");
         },
-        ForStatement(s) {
+        ElementwiseForStatement(s) {
+            output.push(`for (let ${gen(s.iterator)} of ${gen(s.source)}) {`);
             output.push(
-                `for (let ${gen(s.iterator)} of ${gen(s.collection)}) {`
+                `let ${gen(s.productionDec.variable)} = ${gen(
+                    s.productionDec.initializer
+                )};`
             );
             gen(s.body);
             output.push("}");
-        },
-        Conditional(e) {
-            return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(
-                e.alternate
-            )}))`;
         },
         BinaryExpression(e) {
-            const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op;
+            const op =
+                { "==": "===", "!=": "!==", and: "&&", or: "||", "^": "**" }[
+                    e.op
+                ] ?? e.op;
             return `(${gen(e.left)} ${op} ${gen(e.right)})`;
         },
         UnaryExpression(e) {
-            if (e.op === "some") {
-                e.op = "";
-            }
-            return `${e.op}(${gen(e.operand)})`;
+            return e.postfix
+                ? `(${gen(e.operand)})${e.op}`
+                : `${e.op}(${gen(e.operand)})`;
         },
-        EmptyOptional(e) {
-            return "undefined";
+        ListAccess(e) {
+            return `${gen(e.list)}[${gen(e.exp)}]`;
         },
-        SubscriptExpression(e) {
-            return `${gen(e.array)}[${gen(e.index)}]`;
-        },
-        ArrayExpression(e) {
+        List(e) {
             return `[${gen(e.elements).join(",")}]`;
         },
-        EmptyArray(e) {
-            return "[]";
-        },
-        MemberExpression(e) {
+        /* MemberAccess(e) {
             const object = gen(e.object);
             const field = JSON.stringify(gen(e.field));
             const chain = e.isOptional ? "?." : "";
             return `(${object}${chain}[${field}])`;
+        }, */
+        FunctionCall(c) {
+            return `${gen(c.callee)}(${gen(c.args).join(", ")})`;
         },
-        Call(c) {
-            const targetCode = standardFunctions.has(c.callee)
-                ? standardFunctions.get(c.callee)(gen(c.args))
-                : c.callee.constructor === StructType
-                ? `new ${gen(c.callee)}(${gen(c.args).join(", ")})`
-                : `${gen(c.callee)}(${gen(c.args).join(", ")})`;
-            // Calls in expressions vs in statements are handled differently
-            if (
-                c.callee instanceof Type ||
-                c.callee.type.returnType !== Type.VOID
-            ) {
-                return targetCode;
-            }
-            output.push(`${targetCode};`);
+        ProcedureCall(c) {
+            output.push(`${gen(c.callee)}(${gen(c.args).join(", ")});`);
         },
         Number(e) {
-            return e;
-        },
-        BigInt(e) {
             return e;
         },
         Boolean(e) {
@@ -221,6 +206,18 @@ export default function generate(program) {
         },
         String(e) {
             return e;
+        },
+        TemplateLiteral(t) {
+            let final = "`";
+            for (let piece of t.body) {
+                if (piece.constructor === String) {
+                    final = final.concat(piece);
+                } else {
+                    final = final.concat(`\$\{${gen(piece)}\}`);
+                }
+            }
+            final = final.concat("`");
+            return final;
         },
         Array(a) {
             return a.map(gen);
