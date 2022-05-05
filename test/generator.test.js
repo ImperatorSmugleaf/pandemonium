@@ -17,12 +17,12 @@ const fixtures = [
     {
         name: "small",
         source: `
-      let x = 3 * 7;
+      now x: num = 3 * 7;
       x++;
       x--;
-      let y = true;
-      y = 5 ** -x / -100 > - x || false;
-      print((y && y) || false || (x*2) != 5);
+      now y: bool = true;
+      y = 5 ^ -x / -100 > - x or false;
+      print((y and y) or false or (x*2) != 5);
     `,
         expected: dedent`
       let x_1 = 21;
@@ -36,11 +36,11 @@ const fixtures = [
     {
         name: "if",
         source: `
-      let x = 0;
+      now x: num = 0;
       if (x == 0) { print("1"); }
       if (x == 0) { print(1); } else { print(2); }
-      if (x == 0) { print(1); } else if (x == 2) { print(3); }
-      if (x == 0) { print(1); } else if (x == 2) { print(3); } else { print(4); }
+      if (x == 0) { print(1); } elif (x == 2) { print(3); }
+      if (x == 0) { print(1); } elif (x == 2) { print(3); } else { print(4); }
     `,
         expected: dedent`
       let x_1 = 0;
@@ -54,11 +54,10 @@ const fixtures = [
       }
       if ((x_1 === 0)) {
         console.log(1);
-      } else {
+      } else
         if ((x_1 === 2)) {
           console.log(3);
         }
-      }
       if ((x_1 === 0)) {
         console.log(1);
       } else
@@ -72,13 +71,13 @@ const fixtures = [
     {
         name: "while",
         source: `
-      let x = 0;
-      while x < 5 {
-        let y = 0;
-        while y < 5 {
+      now x: num = 0;
+      while (x < 5) {
+        now y: num = 0;
+        while (y < 5) {
           print(x * y);
           y = y + 1;
-          break;
+          nope;
         }
         x = x + 1;
       }
@@ -97,108 +96,66 @@ const fixtures = [
     `,
     },
     {
-        name: "functions",
+        name: "subroutines",
         source: `
-      let z = 0.5;
-      function f(x: float, y: boolean) {
-        print(sin(x) > π);
-        return;
-      }
-      function g(): boolean {
-        return false;
-      }
-      f(z, g());
+        now product: num = 0;
+
+        num timesTwo(num x) {
+          yeet x * 2;
+        }
+      
+        product = timesTwo(2);
+      
+        proc sayHello(string name) {
+            print(\`Hello, #{name}!\`);
+        }
+
+        sayHello("Kieran");
     `,
         expected: dedent`
-      let z_1 = 0.5;
-      function f_2(x_3, y_4) {
-        console.log((Math.sin(x_3) > Math.PI));
-        return;
-      }
-      function g_5() {
-        return false;
-      }
-      f_2(z_1, g_5());
+        let product_1 = 0;
+        function timesTwo_2(x_3) {
+          return (x_3 * 2);
+        }
+        product_1 = timesTwo_2(2);
+        function sayHello_4(name_5) {
+          console.log(\`Hello, \${name_5}!\`);
+        }
+        sayHello_4("Kieran");
     `,
     },
     {
-        name: "arrays",
+        name: "lists",
         source: `
-      let a = [true, false, true];
-      let b = [10, 40 - 20, 30];
-      const c = [](of [int]);
-      print(a[1] || (b[0] < 88 ? false : true));
+      now a: [bool] = [true, false, true];
+      now b: [num] = [10, 40 - 20, 30e100];
+      set c: [num] = [];
+      print(a[1] or (b[0] < 88));
     `,
         expected: dedent`
       let a_1 = [true,false,true];
-      let b_2 = [10,20,30];
+      let b_2 = [10,20,3e+101];
       let c_3 = [];
-      console.log((a_1[1] || (((b_2[0] < 88)) ? (false) : (true))));
-    `,
-    },
-    {
-        name: "structs",
-        source: `
-      struct S { x: int }
-      let x = S(3);
-      print(x.x);
-    `,
-        expected: dedent`
-      class S_1 {
-      constructor(x_2) {
-      this["x_2"] = x_2;
-      }
-      }
-      let x_3 = new S_1(3);
-      console.log((x_3["x_2"]));
-    `,
-    },
-    {
-        name: "optionals",
-        source: `
-      let x = no int;
-      let y = x ?? 2;
-      struct S {x: int}
-      let z = some S(1);
-      let w = z?.x;
-    `,
-        expected: dedent`
-      let x_1 = undefined;
-      let y_2 = (x_1 ?? 2);
-      class S_3 {
-      constructor(x_4) {
-      this["x_4"] = x_4;
-      }
-      }
-      let z_5 = (new S_3(1));
-      let w_6 = (z_5?.["x_4"]);
+      console.log((a_1[1] || (b_2[0] < 88)));
     `,
     },
     {
         name: "for loops",
         source: `
-      for i in 1..<50 {
+      for (now i: num = 0; i < 10; i++) {
         print(i);
       }
-      for j in [10, 20, 30] {
-        print(j);
-      }
-      repeat 3 {
-        // hello
-      }
-      for k in 1...10 {
+      for (now k: num = j ^ 2; j in [10, 20, 30]) {
+        print(k);
       }
     `,
         expected: dedent`
-      for (let i_1 = 1; i_1 < 50; i_1++) {
+      for (let i_1 = 0; (i_1 < 10); (i_1)++) {
         console.log(i_1);
       }
       for (let j_2 of [10,20,30]) {
-        console.log(j_2);
-      }
-      for (let i_3 = 0; i_3 < 3; i_3++) {
-      }
-      for (let k_4 = 1; k_4 <= 10; k_4++) {
+        let k_3 = (j_2 ** 2);
+        console.log(k_3);
       }
     `,
     },
