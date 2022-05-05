@@ -298,7 +298,7 @@ const astBuilder = pandemoniumGrammar.createSemantics().addOperation("ast", {
         return exp.ast();
     },
 
-    TemplateLiteralStmt_str(_first, _rest) {
+    templateLiteralString(_first, _rest) {
         return new core.Token("string", this.source);
     },
 
