@@ -115,10 +115,14 @@ const optimizers = {
     ConditionalStatement(s) {
         s.test = optimize(s.test);
         s.consequent = optimize(s.consequent);
-        s.alternate = s.alternate !== null ? optimize(s.alternate) : [];
+        s.alternate = s.alternate !== null ? optimize(s.alternate) : null;
         if (s.test.constructor === Boolean) {
             return s.test ? s.consequent : s.alternate;
         }
+        return s;
+    },
+    ElseStatement(s) {
+        s.body = optimize(s.body);
         return s;
     },
     WhileStatement(s) {
@@ -198,9 +202,7 @@ const optimizers = {
     UnaryExpression(e) {
         e.op = optimize(e.op);
         e.operand = optimize(e.operand);
-        if (e.operand.constructor === Number) {
-            if (e.op === "-") return -e.operand;
-        } else if (e.operand.constructor === Boolean) {
+        if (e.operand.constructor === Boolean) {
             if (e.op === "!") return !e.operand;
         }
         return e;
@@ -239,6 +241,10 @@ const optimizers = {
     },
     String(e) {
         return e;
+    },
+    TemplateLiteral(t) {
+        t.body = optimize(t.body);
+        return t;
     },
     Token(t) {
         // All tokens get optimized away and basically replace with either their
