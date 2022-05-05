@@ -115,7 +115,6 @@ const tests = [
     ["optimizes 0+", new core.BinaryExpression("+", 0, x), x],
     ["optimizes 0-", new core.BinaryExpression("-", 0, x), neg(x)],
     ["optimizes 1*", new core.BinaryExpression("*", 1, x), x],
-    ["folds negation", new core.UnaryExpression("-", 8), -8],
     ["folds not", new core.UnaryExpression("!", true), false],
     ["optimizes 1^", new core.BinaryExpression("^", 1, x), 1],
     ["optimizes ^0", new core.BinaryExpression("^", x, 0), 1],
